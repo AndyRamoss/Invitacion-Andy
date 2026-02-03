@@ -592,7 +592,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 50px;
+            margin-bottom: 40px;
             position: relative;
         }
         
@@ -609,9 +609,10 @@
             background: rgba(26, 26, 26, 0.5);
             border: 1px solid rgba(212, 175, 55, 0.1);
             border-radius: 15px;
-            padding: 30px;
+            padding: 25px;
             backdrop-filter: blur(10px);
             transition: var(--transition);
+            text-align: center;
         }
         
         .itinerary-item:hover .itinerary-content {
@@ -633,27 +634,13 @@
         .itinerary-content h4 {
             color: var(--gold-light);
             font-size: 1.3rem;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         
-        .itinerary-content ul {
-            list-style: none;
-            padding-left: 0;
-        }
-        
-        .itinerary-content li {
-            position: relative;
-            padding-left: 20px;
-            margin-bottom: 8px;
+        .itinerary-content p {
             color: rgba(255, 255, 255, 0.8);
-        }
-        
-        .itinerary-content li::before {
-            content: '▶';
-            position: absolute;
-            left: 0;
-            color: var(--gold);
-            font-size: 0.8rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
         }
         
         /* GIFTS SECTION */
@@ -670,6 +657,8 @@
             border-radius: 20px;
             padding: 60px 40px;
             backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
         }
         
         .gift-icon {
@@ -677,6 +666,35 @@
             color: var(--gold);
             margin-bottom: 25px;
             animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .gift-image {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 25px;
+            background: linear-gradient(45deg, var(--gold), var(--gold-light));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+        
+        .gift-image::before {
+            content: '💌';
+            font-size: 3.5rem;
+            position: absolute;
+        }
+        
+        .gift-image::after {
+            content: '💵';
+            font-size: 2rem;
+            position: absolute;
+            top: 20px;
+            right: 15px;
+            opacity: 0.8;
         }
         
         .gift-card h2 {
@@ -693,6 +711,17 @@
         
         .gift-message p {
             margin-bottom: 10px;
+        }
+        
+        .gift-note {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            font-style: italic;
+            color: var(--gold-light);
+            font-size: 0.95rem;
         }
         
         /* RSVP SECTION */
@@ -999,6 +1028,15 @@
                 padding: 40px 20px;
             }
             
+            .gift-image {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .gift-image::before {
+                font-size: 3rem;
+            }
+            
             .rsvp-form {
                 padding: 30px 20px;
             }
@@ -1019,6 +1057,15 @@
             
             .section-title {
                 font-size: 1.8rem;
+            }
+            
+            .gift-image {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .gift-image::before {
+                font-size: 2.5rem;
             }
         }
     </style>
@@ -1117,8 +1164,8 @@
                     </div>
                     <h3 class="font-cinzel">Horario</h3>
                     <p class="highlight-time">7:30 P.M. - 3:00 A.M.</p>
-                    <p>Red Carpet: 7:30 P.M.</p>
-                    <p>After Party: Hasta el amanecer</p>
+                    <p>Alfombra Roja: 7:30 P.M.</p>
+                    <p>Fiesta hasta el amanecer</p>
                 </div>
                 
                 <div class="info-card">
@@ -1162,11 +1209,7 @@
                     <div class="itinerary-time">7:30 – 9:00 P.M.</div>
                     <div class="itinerary-content">
                         <h4 class="font-cinzel">Alfombra Roja & Fotos</h4>
-                        <ul>
-                            <li>Pasarela en alfombra roja</li>
-                            <li>Sesión de fotos con el festejado</li>
-                            <li>Cabina fotográfica</li>
-                        </ul>
+                        <p>Llegada y sesión de fotos</p>
                     </div>
                 </div>
                 
@@ -1174,36 +1217,23 @@
                     <div class="itinerary-time">9:00 – 9:30 P.M.</div>
                     <div class="itinerary-content">
                         <h4 class="font-cinzel">Apertura Oficial</h4>
-                        <ul>
-                            <li>Presentación del festejado</li>
-                            <li>Apertura oficial de la fiesta</li>
-                            <li>Brindis de bienvenida</li>
-                        </ul>
+                        <p>Presentación y apertura de la fiesta</p>
                     </div>
                 </div>
                 
                 <div class="itinerary-item">
                     <div class="itinerary-time">9:30 P.M. – 3:00 A.M.</div>
                     <div class="itinerary-content">
-                        <h4 class="font-cinzel">Fiesta & Entretenimiento</h4>
-                        <ul>
-                            <li>Luz y sonido profesional</li>
-                            <li>Brincolines para adultos</li>
-                            <li>Mesa de billar</li>
-                            <li>Futbolitos y juegos</li>
-                        </ul>
+                        <h4 class="font-cinzel">Entretenimiento</h4>
+                        <p>Luz y sonido, juegos y diversión</p>
                     </div>
                 </div>
                 
                 <div class="itinerary-item">
                     <div class="itinerary-time">10:00 – 11:00 P.M.</div>
                     <div class="itinerary-content">
-                        <h4 class="font-cinzel">Cena Buffet</h4>
-                        <ul>
-                            <li>Buffet estilo Hollywood</li>
-                            <li>Menú gourmet temático</li>
-                            <li>Barra de bebidas ilimitadas</li>
-                        </ul>
+                        <h4 class="font-cinzel">Cena</h4>
+                        <p>Cena y barra libre</p>
                     </div>
                 </div>
                 
@@ -1211,23 +1241,15 @@
                     <div class="itinerary-time">11:30 P.M. – 12:30 A.M.</div>
                     <div class="itinerary-content">
                         <h4 class="font-cinzel">Show Sorpresa</h4>
-                        <ul>
-                            <li>Espectáculo especial</li>
-                            <li>Actuación exclusiva</li>
-                            <li>Momento inolvidable</li>
-                        </ul>
+                        <p>Espectáculo especial</p>
                     </div>
                 </div>
                 
                 <div class="itinerary-item">
                     <div class="itinerary-time">12:30 – 1:30 A.M.</div>
                     <div class="itinerary-content">
-                        <h4 class="font-cinzel">Turno Mecánico</h4>
-                        <ul>
-                            <li>Diversión garantizada</li>
-                            <li>Música y baile</li>
-                            <li>Competencias y premios</li>
-                        </ul>
+                        <h4 class="font-cinzel">Toro Mecánico</h4>
+                        <p>Diversión con música y baile</p>
                     </div>
                 </div>
                 
@@ -1235,11 +1257,7 @@
                     <div class="itinerary-time">3:00 A.M.</div>
                     <div class="itinerary-content">
                         <h4 class="font-cinzel">Fin de la Fiesta</h4>
-                        <ul>
-                            <li>Créditos finales</li>
-                            <li>Despedida especial</li>
-                            <li>Recuerdos para llevar</li>
-                        </ul>
+                        <p>Despedida especial</p>
                     </div>
                 </div>
             </div>
@@ -1252,14 +1270,15 @@
     <section class="gifts-section animate-on-scroll">
         <div class="content-section">
             <div class="gift-card">
-                <div class="gift-icon">
-                    <i class="fas fa-gift"></i>
-                </div>
+                <div class="gift-image"></div>
                 <h2 class="font-cinzel">Regalos</h2>
                 <div class="gift-message">
                     <p>Tu presencia es el mejor regalo que puedo recibir.</p>
                     <p>Si deseas hacerme un obsequio,</p>
-                    <p>la lluvia de sobres será bienvenida con gratitud.</p>
+                    <p>te agradeceré mucho tu detalle.</p>
+                </div>
+                <div class="gift-note">
+                    <i class="fas fa-envelope"></i> La lluvia de sobres será bienvenida con gratitud
                 </div>
             </div>
         </div>
@@ -1385,9 +1404,6 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="js/firebase-config.js"></script>
-    <script src="js/invitation.js"></script>
-    
     <script>
         // Animaciones al hacer scroll
         document.addEventListener('DOMContentLoaded', function() {
