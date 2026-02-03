@@ -1,4 +1,4 @@
-// invitation.js - Sistema RSVP con límites por parámetro de URL
+// invitation.js - Sistema RSVP con límites por parámetro de URL (CORREGIDO)
 
 // Variables globales
 let currentRSVPId = null;
@@ -17,6 +17,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (maxAllowedGuests < 1) maxAllowedGuests = 1;
         if (maxAllowedGuests > 10) maxAllowedGuests = 10;
         console.log("📊 Límite establecido desde URL:", maxAllowedGuests, "personas");
+    } else {
+        // Si no hay parámetro, usar 2 como predeterminado
+        maxAllowedGuests = 2;
     }
     
     // Inicializar Firebase
@@ -27,6 +30,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Mostrar información según parámetro
     showInvitationInfo(maxAllowedGuests);
+    
+    // Actualizar UI inmediatamente
+    updateUILimits(maxAllowedGuests);
 });
 
 function initializeFirebaseForInvitations() {
@@ -83,10 +89,7 @@ function showInvitationInfo(maxGuests) {
         invitationTitle.textContent = "Confirmar Asistencia";
     }
     
-    const maxAllowedSpan = document.getElementById('max-allowed');
-    if (maxAllowedSpan) {
-        maxAllowedSpan.textContent = maxGuests;
-    }
+    // NO actualizar maxAllowedSpan aquí, lo hacemos en updateUILimits
     
     const invitationMessage = document.getElementById('invitation-message');
     if (invitationMessage) {
@@ -102,6 +105,37 @@ function showInvitationInfo(maxGuests) {
     }
 }
 
+function updateUILimits(maxGuests) {
+    console.log("🔄 Actualizando límites en UI:", maxGuests);
+    
+    // 1. Actualizar el campo de entrada de número de invitados
+    const guestsCountInput = document.getElementById('guests-count');
+    if (guestsCountInput) {
+        guestsCountInput.min = 1;
+        guestsCountInput.max = maxGuests;
+        guestsCountInput.value = Math.min(2, maxGuests); // Valor por defecto, máximo 2 o el límite
+        console.log("🔢 Input configurado: min=1, max=" + maxGuests + ", value=" + guestsCountInput.value);
+    }
+    
+    // 2. Actualizar el texto que muestra el máximo permitido
+    const maxAllowedSpan = document.getElementById('max-allowed');
+    if (maxAllowedSpan) {
+        maxAllowedSpan.textContent = maxGuests;
+        console.log("📏 Máximo permitido actualizado a:", maxGuests);
+    }
+    
+    // 3. Actualizar el mensaje de "Invitación válida para"
+    const maxGuestsElement = document.getElementById('max-guests');
+    if (maxGuestsElement) {
+        maxGuestsElement.textContent = maxGuests + " persona" + (maxGuests > 1 ? 's' : '');
+    }
+    
+    // 4. Actualizar placeholder si existe
+    if (guestsCountInput) {
+        guestsCountInput.placeholder = `Máximo ${maxGuests} persona${maxGuests > 1 ? 's' : ''}`;
+    }
+}
+
 function setupRSVPForm() {
     const rsvpForm = document.getElementById('rsvp-form');
     if (!rsvpForm) {
@@ -112,6 +146,9 @@ function setupRSVPForm() {
     console.log("✅ Formulario RSVP encontrado, configurando...");
     console.log("📏 Límite máximo de invitados:", maxAllowedGuests);
     
+    // Asegurarnos de que los límites estén actualizados
+    updateUILimits(maxAllowedGuests);
+    
     // Mostrar/ocultar campos según selección
     const attendanceSelect = document.getElementById('attendance');
     const guestsCountGroup = document.getElementById('guests-count-group');
@@ -120,33 +157,23 @@ function setupRSVPForm() {
     
     // Mostrar todos los campos siempre
     if (nameGroup) nameGroup.style.display = 'block';
-    if (guestsCountGroup) guestsCountGroup.style.display = 'block';
     if (noteGroup) noteGroup.style.display = 'block';
     
-    // Configurar campo de número de invitados
-    const guestsCountInput = document.getElementById('guests-count');
-    const maxAllowedSpan = document.getElementById('max-allowed');
-    
-    if (guestsCountInput) {
-        guestsCountInput.min = 1;
-        guestsCountInput.max = maxAllowedGuests;
-        guestsCountInput.value = Math.min(2, maxAllowedGuests); // Valor por defecto, máximo 2 o el límite
-        console.log("🔢 Input configurado: min=1, max=" + maxAllowedGuests + ", value=" + guestsCountInput.value);
-    }
-    
-    if (maxAllowedSpan) {
-        maxAllowedSpan.textContent = maxAllowedGuests;
-    }
-    
+    // Mostrar/ocultar campo de número de invitados según selección
     if (attendanceSelect) {
+        // Configurar estado inicial
+        if (attendanceSelect.value === 'yes') {
+            if (guestsCountGroup) guestsCountGroup.style.display = 'block';
+        } else {
+            if (guestsCountGroup) guestsCountGroup.style.display = 'none';
+        }
+        
         attendanceSelect.addEventListener('change', function() {
             console.log("Cambio en selección de asistencia:", this.value);
             if (this.value === 'yes') {
                 if (guestsCountGroup) guestsCountGroup.style.display = 'block';
-                if (noteGroup) noteGroup.style.display = 'block';
             } else if (this.value === 'no') {
                 if (guestsCountGroup) guestsCountGroup.style.display = 'none';
-                if (noteGroup) noteGroup.style.display = 'block';
             }
         });
     }
@@ -195,7 +222,7 @@ function setupRSVPForm() {
                 }
                 
                 if (guestsNum > maxAllowedGuests) {
-                    throw new Error(`Máximo ${maxAllowedGuests} persona${maxAllowedGuests > 1 ? 's' : ''} permitida${maxAllowedGuests > 1 ? 's' : ''}`);
+                    throw new Error(`Máximo ${maxAllowedGuests} persona${maxAllowedGuests > 1 ? 's' : ''} permitida${maxAllowedGuests > 1 ? 's' : ''}. Tu invitación es para ${maxAllowedGuests} persona${maxAllowedGuests > 1 ? 's' : ''}.`);
                 }
             }
             
