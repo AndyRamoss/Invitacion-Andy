@@ -1,10 +1,23 @@
-// invitation.js - Sistema de RSVP automático (sin códigos previos)
+// invitation.js - Sistema RSVP con límites por parámetro de URL
 
 // Variables globales
 let currentRSVPId = null;
+let maxAllowedGuests = 2; // Valor por defecto
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("🎬 Sistema RSVP automático inicializando...");
+    console.log("🎬 Sistema RSVP con límites inicializando...");
+    
+    // Obtener parámetro de URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const maxGuestsParam = urlParams.get('p');
+    
+    // Establecer límite máximo
+    if (maxGuestsParam) {
+        maxAllowedGuests = parseInt(maxGuestsParam);
+        if (maxAllowedGuests < 1) maxAllowedGuests = 1;
+        if (maxAllowedGuests > 10) maxAllowedGuests = 10;
+        console.log("📊 Límite establecido desde URL:", maxAllowedGuests, "personas");
+    }
     
     // Inicializar Firebase
     initializeFirebaseForInvitations();
@@ -12,8 +25,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Configurar formulario de RSVP
     setupRSVPForm();
     
-    // Mostrar información básica
-    showGenericInfo();
+    // Mostrar información según parámetro
+    showInvitationInfo(maxAllowedGuests);
 });
 
 function initializeFirebaseForInvitations() {
@@ -51,12 +64,12 @@ function initializeFirebaseForInvitations() {
     }
 }
 
-function showGenericInfo() {
-    console.log("ℹ️ Mostrando información genérica");
+function showInvitationInfo(maxGuests) {
+    console.log("ℹ️ Mostrando información para", maxGuests, "invitados");
     
     const maxGuestsElement = document.getElementById('max-guests');
     if (maxGuestsElement) {
-        maxGuestsElement.textContent = "Confirmación abierta";
+        maxGuestsElement.textContent = maxGuests + " persona" + (maxGuests > 1 ? 's' : '');
     }
     
     const guestStatusElement = document.getElementById('guest-status');
@@ -72,12 +85,20 @@ function showGenericInfo() {
     
     const maxAllowedSpan = document.getElementById('max-allowed');
     if (maxAllowedSpan) {
-        maxAllowedSpan.textContent = "10"; // Máximo por defecto
+        maxAllowedSpan.textContent = maxGuests;
     }
     
     const invitationMessage = document.getElementById('invitation-message');
     if (invitationMessage) {
-        invitationMessage.textContent = "¡Confirma tu asistencia a Hollywood Nights!";
+        invitationMessage.textContent = `Tu invitación es para ${maxGuests} persona${maxGuests > 1 ? 's' : ''}`;
+    }
+    
+    // Actualizar título del hero si hay parámetro
+    if (maxGuests > 2) {
+        const heroSubtitle = document.querySelector('.hero-subtitle');
+        if (heroSubtitle) {
+            heroSubtitle.textContent = `Invitación para ${maxGuests} personas`;
+        }
     }
 }
 
@@ -89,6 +110,7 @@ function setupRSVPForm() {
     }
     
     console.log("✅ Formulario RSVP encontrado, configurando...");
+    console.log("📏 Límite máximo de invitados:", maxAllowedGuests);
     
     // Mostrar/ocultar campos según selección
     const attendanceSelect = document.getElementById('attendance');
@@ -101,6 +123,21 @@ function setupRSVPForm() {
     if (guestsCountGroup) guestsCountGroup.style.display = 'block';
     if (noteGroup) noteGroup.style.display = 'block';
     
+    // Configurar campo de número de invitados
+    const guestsCountInput = document.getElementById('guests-count');
+    const maxAllowedSpan = document.getElementById('max-allowed');
+    
+    if (guestsCountInput) {
+        guestsCountInput.min = 1;
+        guestsCountInput.max = maxAllowedGuests;
+        guestsCountInput.value = Math.min(2, maxAllowedGuests); // Valor por defecto, máximo 2 o el límite
+        console.log("🔢 Input configurado: min=1, max=" + maxAllowedGuests + ", value=" + guestsCountInput.value);
+    }
+    
+    if (maxAllowedSpan) {
+        maxAllowedSpan.textContent = maxAllowedGuests;
+    }
+    
     if (attendanceSelect) {
         attendanceSelect.addEventListener('change', function() {
             console.log("Cambio en selección de asistencia:", this.value);
@@ -112,14 +149,6 @@ function setupRSVPForm() {
                 if (noteGroup) noteGroup.style.display = 'block';
             }
         });
-    }
-    
-    // Configurar máximo de invitados
-    const guestsCountInput = document.getElementById('guests-count');
-    if (guestsCountInput) {
-        guestsCountInput.min = 1;
-        guestsCountInput.max = 10;
-        guestsCountInput.value = 2;
     }
     
     // Manejar envío del formulario
@@ -145,7 +174,8 @@ function setupRSVPForm() {
                 name,
                 email,
                 attendance,
-                guestsCount,
+                guestsCount: parseInt(guestsCount),
+                maxAllowed: maxAllowedGuests,
                 note
             });
             
@@ -159,8 +189,13 @@ function setupRSVPForm() {
             }
             
             if (attendance === 'yes') {
-                if (!guestsCount || guestsCount < 1 || guestsCount > 10) {
-                    throw new Error('Selecciona un número válido de personas (1-10)');
+                const guestsNum = parseInt(guestsCount);
+                if (!guestsCount || guestsNum < 1) {
+                    throw new Error('Selecciona el número de personas que asistirán');
+                }
+                
+                if (guestsNum > maxAllowedGuests) {
+                    throw new Error(`Máximo ${maxAllowedGuests} persona${maxAllowedGuests > 1 ? 's' : ''} permitida${maxAllowedGuests > 1 ? 's' : ''}`);
                 }
             }
             
@@ -170,10 +205,12 @@ function setupRSVPForm() {
                 email: email,
                 attendance: attendance,
                 guestsCount: attendance === 'yes' ? parseInt(guestsCount) : 0,
+                maxAllowed: maxAllowedGuests, // Guardamos el límite permitido
                 note: note,
                 timestamp: new Date().toISOString(),
                 userAgent: navigator.userAgent,
-                ip: await getClientIP()
+                ip: await getClientIP(),
+                invitationCode: getInvitationCodeFromURL() // Para saber qué enlace usaron
             };
             
             console.log("RSVP Data preparado:", rsvpData);
@@ -202,6 +239,12 @@ function setupRSVPForm() {
     console.log("✅ Formulario RSVP configurado correctamente");
 }
 
+function getInvitationCodeFromURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const maxGuestsParam = urlParams.get('p');
+    return maxGuestsParam ? `INV-${maxGuestsParam}` : 'INV-GENERAL';
+}
+
 async function saveRSVPToFirebase(rsvpData) {
     console.log("🔄 Guardando RSVP en Firebase...");
     
@@ -223,17 +266,19 @@ async function saveRSVPToFirebase(rsvpData) {
         const firestoreData = {
             name: rsvpData.name,
             email: rsvpData.email || '',
-            maxGuests: 10, // Máximo permitido
+            maxGuests: maxAllowedGuests, // Usamos el límite de la URL
             confirmedGuests: rsvpData.guestsCount,
             status: rsvpData.attendance === 'yes' ? 'confirmed' : 'declined',
             attendance: rsvpData.attendance,
             note: rsvpData.note || '',
             userAgent: rsvpData.userAgent,
             ip: rsvpData.ip,
+            invitationCode: rsvpData.invitationCode,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             responseDate: firebase.firestore.FieldValue.serverTimestamp(),
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-            source: 'public_form'
+            source: 'public_form',
+            maxAllowedParam: maxAllowedGuests // Guardamos el parámetro original
         };
         
         console.log("Guardando en documento:", rsvpId);
@@ -251,7 +296,9 @@ async function saveRSVPToFirebase(rsvpData) {
                 details: {
                     name: rsvpData.name,
                     status: firestoreData.status,
-                    guestsCount: firestoreData.confirmedGuests
+                    guestsCount: firestoreData.confirmedGuests,
+                    maxAllowed: maxAllowedGuests,
+                    invitationCode: rsvpData.invitationCode
                 },
                 timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                 hostname: window.location.hostname,
@@ -293,12 +340,13 @@ async function saveRSVPToFirebase(rsvpData) {
 }
 
 function generateRSVPId(name) {
-    // Generar ID único basado en nombre y timestamp
+    // Generar ID único basado en nombre, timestamp y límite
     const timestamp = Date.now().toString(36);
     const nameCode = name.substring(0, 3).toUpperCase().replace(/\s/g, '');
     const random = Math.random().toString(36).substring(2, 5).toUpperCase();
+    const limitCode = maxAllowedGuests.toString().padStart(2, '0');
     
-    return `${nameCode}${timestamp}${random}`;
+    return `${nameCode}${limitCode}${timestamp}${random}`;
 }
 
 async function getClientIP() {
@@ -330,6 +378,7 @@ function showConfirmationMessage(rsvpData, rsvpId) {
                 </div>
                 <h3 class="font-cinzel">¡Confirmación Exitosa!</h3>
                 <p>Gracias <strong>${rsvpData.name}</strong>, has confirmado asistencia para <strong>${rsvpData.guestsCount} persona${rsvpData.guestsCount > 1 ? 's' : ''}</strong>.</p>
+                <p>Límite de tu invitación: <strong>${maxAllowedGuests} persona${maxAllowedGuests > 1 ? 's' : ''}</strong></p>
                 <p>Te esperamos en la alfombra roja el <strong>21 de Febrero 2026</strong>.</p>
                 ${rsvpData.note ? `<p class="message-note"><strong>Tu mensaje:</strong> "${rsvpData.note}"</p>` : ''}
                 <p style="margin-top: 20px; font-size: 0.9rem; color: rgba(255,255,255,0.7);">
@@ -348,6 +397,7 @@ function showConfirmationMessage(rsvpData, rsvpId) {
                 </div>
                 <h3 class="font-cinzel">Confirmación Registrada</h3>
                 <p>Gracias <strong>${rsvpData.name}</strong> por informarnos que no podrás asistir.</p>
+                <p>Límite de tu invitación: <strong>${maxAllowedGuests} persona${maxAllowedGuests > 1 ? 's' : ''}</strong></p>
                 <p>Lamentamos no poder contar con tu presencia.</p>
                 ${rsvpData.note ? `<p class="message-note"><strong>Tu mensaje:</strong> "${rsvpData.note}"</p>` : ''}
                 <p style="margin-top: 20px; font-size: 0.9rem; color: rgba(255,255,255,0.7);">
@@ -380,4 +430,4 @@ function showErrorMessage(errorMessage) {
     }, 8000);
 }
 
-console.log("✅ Sistema RSVP automático cargado correctamente");
+console.log("✅ Sistema RSVP con límites cargado correctamente");
