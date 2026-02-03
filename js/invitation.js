@@ -53,13 +53,15 @@ function initializeFirebaseForInvitations() {
                 appId: "1:226296434450:web:470fb309d3b73a630a2dcb",
                 measurementId: "G-8YTM0C38ST"
             };
+            
+            console.log("🔄 Inicializando Firebase con configuración...");
             firebase.initializeApp(firebaseConfig);
             console.log("✅ Firebase inicializado para invitaciones");
             return true;
+        } else {
+            console.log("✅ Firebase ya estaba inicializado");
+            return true;
         }
-        
-        console.log("✅ Firebase ya estaba inicializado");
-        return true;
         
     } catch (error) {
         console.error("❌ Error inicializando Firebase:", error);
@@ -69,22 +71,27 @@ function initializeFirebaseForInvitations() {
 
 async function checkInvitation(invitationCode) {
     try {
-        console.log("Verificando invitación:", invitationCode);
+        console.log("🔍 Verificando invitación:", invitationCode);
+        
+        // Esperar un momento para asegurar que Firebase esté listo
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
         // Verificar que Firebase esté disponible
         if (typeof firebase === 'undefined' || !firebase.firestore) {
-            console.warn("Firebase no está disponible");
+            console.error("❌ Firebase Firestore no está disponible");
             showGenericInfo();
             return;
         }
         
         const db = firebase.firestore();
+        console.log("📡 Conectado a Firestore");
         
         // Buscar invitación
+        console.log("Buscando documento en colección 'guests':", invitationCode);
         const guestDoc = await db.collection('guests').doc(invitationCode).get();
         
         if (!guestDoc.exists) {
-            console.warn("Invitación no encontrada:", invitationCode);
+            console.warn("⚠️ Invitación no encontrada:", invitationCode);
             showInvalidInvitation();
             return;
         }
@@ -100,11 +107,14 @@ async function checkInvitation(invitationCode) {
         
     } catch (error) {
         console.error("❌ Error verificando invitación:", error);
+        console.error("Detalles del error:", error.message, error.code);
         showGenericInfo();
     }
 }
 
 function setupSimpleInvitation(maxGuests) {
+    console.log("📝 Configurando invitación simple para", maxGuests, "personas");
+    
     // Actualizar UI con número de invitados
     const maxGuestsElement = document.getElementById('max-guests');
     const guestStatusElement = document.getElementById('guest-status');
@@ -136,6 +146,8 @@ function setupSimpleInvitation(maxGuests) {
 }
 
 function showGuestInfo(guestData, invitationCode) {
+    console.log("👤 Mostrando información del invitado:", guestData);
+    
     // Actualizar información del invitado
     const maxGuestsElement = document.getElementById('max-guests');
     const guestStatusElement = document.getElementById('guest-status');
@@ -182,6 +194,8 @@ function showGuestInfo(guestData, invitationCode) {
 }
 
 function showGenericInfo() {
+    console.log("ℹ️ Mostrando información genérica");
+    
     const maxGuestsElement = document.getElementById('max-guests');
     if (maxGuestsElement) {
         maxGuestsElement.textContent = "2 personas (predeterminado)";
@@ -199,6 +213,8 @@ function showGenericInfo() {
 }
 
 function showInvalidInvitation() {
+    console.log("❌ Mostrando mensaje de invitación inválida");
+    
     const rsvpForm = document.getElementById('rsvp-form-container');
     if (rsvpForm) {
         rsvpForm.innerHTML = `
@@ -216,7 +232,12 @@ function showInvalidInvitation() {
 
 function setupRSVPForm() {
     const rsvpForm = document.getElementById('rsvp-form');
-    if (!rsvpForm) return;
+    if (!rsvpForm) {
+        console.error("❌ No se encontró el formulario RSVP");
+        return;
+    }
+    
+    console.log("✅ Formulario RSVP encontrado, configurando...");
     
     // Mostrar/ocultar campos según selección
     const attendanceSelect = document.getElementById('attendance');
@@ -226,6 +247,7 @@ function setupRSVPForm() {
     
     if (attendanceSelect) {
         attendanceSelect.addEventListener('change', function() {
+            console.log("Cambio en selección de asistencia:", this.value);
             if (this.value === 'yes') {
                 guestsCountGroup.style.display = 'block';
                 noteGroup.style.display = 'block';
@@ -245,6 +267,7 @@ function setupRSVPForm() {
     // Manejar envío del formulario
     rsvpForm.addEventListener('submit', async function(e) {
         e.preventDefault();
+        console.log("📤 Enviando formulario RSVP...");
         
         try {
             // Mostrar loading
@@ -258,6 +281,15 @@ function setupRSVPForm() {
             const attendance = document.getElementById('attendance').value;
             const guestsCount = document.getElementById('guests-count')?.value || 1;
             const note = document.getElementById('note')?.value.trim() || '';
+            
+            console.log("Datos del formulario:", {
+                name,
+                attendance,
+                guestsCount,
+                note,
+                currentInvitationCode,
+                hasGuestData: !!currentGuestData
+            });
             
             // Validar
             if (!attendance) {
@@ -285,13 +317,16 @@ function setupRSVPForm() {
                 guestsCount: attendance === 'yes' ? parseInt(guestsCount) : 0,
                 note: note,
                 timestamp: new Date().toISOString(),
-                userAgent: navigator.userAgent,
-                ip: await getClientIP()
+                userAgent: navigator.userAgent
             };
+            
+            console.log("RSVP Data preparado:", rsvpData);
             
             // Actualizar en Firebase si hay código de invitación
             if (currentInvitationCode) {
-                await updateInvitationInFirebase(rsvpData);
+                console.log("Actualizando en Firebase con código:", currentInvitationCode);
+                const result = await updateInvitationInFirebase(rsvpData);
+                console.log("Resultado de Firebase:", result);
             } else {
                 // Si no hay código, solo mostrar confirmación local
                 console.log("RSVP sin código de invitación:", rsvpData);
@@ -310,22 +345,31 @@ function setupRSVPForm() {
             submitBtn.disabled = false;
         }
     });
+    
+    console.log("✅ Formulario RSVP configurado correctamente");
 }
 
 async function updateInvitationInFirebase(rsvpData) {
+    console.log("🔄 Iniciando actualización en Firebase...");
+    
     try {
-        if (!firebase.firestore) {
-            console.warn("Firestore no disponible para guardar RSVP");
-            return;
+        // Verificar que Firebase esté disponible
+        if (typeof firebase === 'undefined' || !firebase.firestore) {
+            console.error("❌ Firebase Firestore no disponible");
+            throw new Error('Servicio no disponible. Intenta recargar la página.');
         }
         
         const db = firebase.firestore();
+        console.log("✅ Conectado a Firestore");
         
         if (!currentInvitationCode) {
-            console.warn("No hay código de invitación para actualizar");
-            return;
+            console.warn("⚠️ No hay código de invitación para actualizar");
+            return { success: false, message: 'No hay código de invitación' };
         }
         
+        console.log("📝 Actualizando documento:", currentInvitationCode);
+        
+        // Preparar datos de actualización
         const updateData = {
             status: rsvpData.attendance === 'yes' ? 'confirmed' : 'declined',
             confirmedGuests: rsvpData.attendance === 'yes' ? rsvpData.guestsCount : 0,
@@ -344,17 +388,16 @@ async function updateInvitationInFirebase(rsvpData) {
             updateData.note = rsvpData.note;
         }
         
-        console.log("Actualizando invitación en Firebase:", {
-            code: currentInvitationCode,
-            data: updateData
-        });
+        console.log("Datos a actualizar:", updateData);
         
         // Actualizar en Firestore
+        console.log("Enviando actualización a Firestore...");
         await db.collection('guests').doc(currentInvitationCode).update(updateData);
+        console.log("✅ Documento actualizado en Firestore");
         
-        // Registrar actividad
+        // Registrar actividad en logs
         try {
-            await db.collection('logs').add({
+            const logData = {
                 action: 'rsvp_updated',
                 target: currentInvitationCode,
                 details: {
@@ -365,16 +408,17 @@ async function updateInvitationInFirebase(rsvpData) {
                 },
                 timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                 hostname: window.location.hostname,
-                userAgent: navigator.userAgent
-            });
+                userAgent: navigator.userAgent,
+                ip: 'web-client' // No podemos obtener IP desde cliente web sin backend
+            };
             
-            console.log("✅ RSVP registrado en logs de Firebase");
+            await db.collection('logs').add(logData);
+            console.log("✅ Actividad registrada en logs");
             
         } catch (logError) {
-            console.warn("No se pudo registrar en logs:", logError);
+            console.warn("⚠️ No se pudo registrar en logs:", logError);
+            // No fallar si no se puede registrar el log
         }
-        
-        console.log("✅ RSVP actualizado en Firebase correctamente");
         
         // Actualizar datos locales
         if (currentGuestData) {
@@ -383,25 +427,42 @@ async function updateInvitationInFirebase(rsvpData) {
             if (rsvpData.name) currentGuestData.name = rsvpData.name;
         }
         
+        return {
+            success: true,
+            message: 'Confirmación guardada exitosamente',
+            data: updateData
+        };
+        
     } catch (error) {
-        console.error("❌ Error actualizando invitación en Firebase:", error);
-        throw new Error('No se pudo guardar la confirmación. Intenta de nuevo.');
-    }
-}
-
-async function getClientIP() {
-    try {
-        const response = await fetch('https://api.ipify.org?format=json');
-        const data = await response.json();
-        return data.ip;
-    } catch (error) {
-        return 'unknown';
+        console.error("❌ Error actualizando en Firebase:", error);
+        console.error("Código de error:", error.code);
+        console.error("Mensaje de error:", error.message);
+        
+        let errorMessage = 'No se pudo guardar la confirmación. ';
+        
+        if (error.code === 'permission-denied') {
+            errorMessage += 'Error de permisos. Contacta al administrador.';
+            console.error("🔒 ERROR DE PERMISOS: Verifica las reglas de Firestore");
+        } else if (error.code === 'not-found') {
+            errorMessage += 'Invitación no encontrada.';
+        } else if (error.code === 'unavailable') {
+            errorMessage += 'Servicio no disponible. Verifica tu conexión.';
+        } else {
+            errorMessage += 'Intenta de nuevo.';
+        }
+        
+        throw new Error(errorMessage);
     }
 }
 
 function showConfirmationMessage(rsvpData) {
+    console.log("✅ Mostrando mensaje de confirmación");
+    
     const rsvpForm = document.getElementById('rsvp-form-container');
-    if (!rsvpForm) return;
+    if (!rsvpForm) {
+        console.error("❌ No se encontró el contenedor del formulario");
+        return;
+    }
     
     let message = '';
     
@@ -416,7 +477,7 @@ function showConfirmationMessage(rsvpData) {
                 <p>Te esperamos en la alfombra roja el 21 de Febrero 2026.</p>
                 ${rsvpData.note ? `<p class="message-note">Tu mensaje: "${rsvpData.note}"</p>` : ''}
                 <p style="margin-top: 20px; font-size: 0.9rem; color: rgba(255,255,255,0.7);">
-                    <i class="fas fa-info-circle"></i> Tu confirmación ha sido guardada.
+                    <i class="fas fa-info-circle"></i> Tu confirmación ha sido guardada en el sistema.
                 </p>
             </div>
         `;
@@ -431,7 +492,7 @@ function showConfirmationMessage(rsvpData) {
                 <p>Lamentamos no poder contar con tu presencia.</p>
                 ${rsvpData.note ? `<p class="message-note">Tu mensaje: "${rsvpData.note}"</p>` : ''}
                 <p style="margin-top: 20px; font-size: 0.9rem; color: rgba(255,255,255,0.7);">
-                    <i class="fas fa-info-circle"></i> Tu respuesta ha sido guardada.
+                    <i class="fas fa-info-circle"></i> Tu respuesta ha sido guardada en el sistema.
                 </p>
             </div>
         `;
@@ -447,19 +508,26 @@ function showConfirmationMessage(rsvpData) {
             guestStatusElement.style.color = rsvpData.attendance === 'yes' ? '#4CAF50' : '#f44336';
         }
     }
+    
+    console.log("✅ Mensaje de confirmación mostrado");
 }
 
 function showErrorMessage(errorMessage) {
+    console.error("❌ Mostrando mensaje de error:", errorMessage);
+    
     const errorDiv = document.getElementById('error-message');
-    if (!errorDiv) return;
+    if (!errorDiv) {
+        console.error("❌ No se encontró el div de error");
+        return;
+    }
     
     errorDiv.style.display = 'block';
     document.getElementById('error-details').textContent = errorMessage;
     
-    // Ocultar después de 5 segundos
+    // Ocultar después de 8 segundos
     setTimeout(() => {
         errorDiv.style.display = 'none';
-    }, 5000);
+    }, 8000);
 }
 
 console.log("✅ Invitation JS cargado correctamente");
