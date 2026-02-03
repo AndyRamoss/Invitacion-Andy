@@ -1103,6 +1103,7 @@
             </div>
             <div id="invitation-info" style="margin-top: 20px;">
                 <div id="invitation-message" class="font-playfair" style="color: var(--gold-light); font-size: 1.1rem;"></div>
+                <div id="invitation-details" class="font-playfair" style="color: var(--gold-light); font-size: 1rem; margin-top: 10px;"></div>
             </div>
         </div>
         <div class="scroll-hint">
@@ -1405,8 +1406,72 @@
 
     <!-- Scripts -->
     <script>
-        // Animaciones al hacer scroll
+        // Configuración de Firebase (TU CONFIGURACIÓN)
+        const firebaseConfig = {
+            apiKey: "AIzaSyB82WhFzHfXmzqOcQ3rTgl-8zGEx0Tb4dY",
+            authDomain: "andy-invitacion.firebaseapp.com",
+            projectId: "andy-invitacion",
+            storageBucket: "andy-invitacion.firebasestorage.app",
+            messagingSenderId: "191643816356",
+            appId: "1:191643816356:web:3cbb0d6d05d3c337492c13",
+            measurementId: "G-FFDR2RQGYB"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // Obtener parámetro de URL (p=1, p=2, etc.)
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        // Obtener ID de invitación del parámetro p
+        const invitationId = getUrlParameter('p');
+        
+        // Datos de invitaciones predefinidos (de 1 a 10)
+        const invitationsData = {
+            '1': { name: "Familia Rodríguez", maxGuests: 4, message: "¡Hola Familia! Los espero en mi fiesta." },
+            '2': { name: "Amigos del trabajo", maxGuests: 2, message: "Compañeros, ¡no falten a esta gran noche!" },
+            '3': { name: "Primos y primas", maxGuests: 5, message: "Primer@s, ¡vamos a pasarla increíble!" },
+            '4': { name: "Mejores amigos", maxGuests: 3, message: "Amig@s, ¡esta noche será inolvidable con ustedes!" },
+            '5': { name: "Familia Pérez", maxGuests: 4, message: "Querida familia Pérez, ¡los espero con gusto!" },
+            '6': { name: "Compañeros de universidad", maxGuests: 3, message: "¡Nos vemos en la fiesta, compañeros!" },
+            '7': { name: "Vecinos", maxGuests: 2, message: "Vecin@s, ¡los invito a celebrar conmigo!" },
+            '8': { name: "Amigos de la infancia", maxGuests: 4, message: "¡Amig@s de toda la vida, no falten!" },
+            '9': { name: "Familia González", maxGuests: 3, message: "Familia González, ¡será un honor tenerlos!" },
+            '10': { name: "Invitados especiales", maxGuests: 2, message: "Invitad@s especiales, ¡los espero con alegría!" }
+        };
+
+        // Variables globales
+        let currentInvitationId = null;
+        let currentInvitationData = null;
+
         document.addEventListener('DOMContentLoaded', function() {
+            // Verificar invitación
+            if (invitationId && invitationsData[invitationId]) {
+                currentInvitationId = invitationId;
+                currentInvitationData = invitationsData[invitationId];
+                
+                // Mostrar información de la invitación
+                document.getElementById('invitation-message').textContent = currentInvitationData.message;
+                document.getElementById('max-guests').textContent = currentInvitationData.maxGuests + " personas";
+                document.getElementById('max-allowed').textContent = currentInvitationData.maxGuests;
+                
+                // Cambiar título de invitación
+                document.getElementById('invitation-title').textContent = `Invitación para ${currentInvitationData.name}`;
+                
+                // Intentar cargar datos de Firestore
+                loadInvitationData();
+            } else {
+                // Invitación inválida
+                showInvalidInvitation();
+            }
+
             // Observador de intersección para animaciones
             const observerOptions = {
                 threshold: 0.1,
@@ -1494,7 +1559,165 @@
             // Actualizar countdown cada segundo
             updateCountdown();
             setInterval(updateCountdown, 1000);
+            
+            // Configurar formulario RSVP
+            setupRSVPForm();
         });
+
+        // Cargar datos de Firestore
+        async function loadInvitationData() {
+            try {
+                const docRef = db.collection('invitaciones').doc(currentInvitationId);
+                const doc = await docRef.get();
+                
+                if (doc.exists) {
+                    const data = doc.data();
+                    document.getElementById('guest-status').textContent = data.confirmed ? 'Confirmado' : 'Pendiente de confirmación';
+                    
+                    // Si ya está confirmado, mostrar detalles
+                    if (data.confirmed) {
+                        document.getElementById('invitation-details').textContent = `Confirmado por: ${data.guestName} (${data.guestsCount} personas)`;
+                    }
+                }
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+            }
+        }
+
+        // Mostrar invitación inválida
+        function showInvalidInvitation() {
+            const heroSection = document.querySelector('.hero-section');
+            heroSection.innerHTML = `
+                <div class="invalid-invitation">
+                    <div class="invalid-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h2 class="font-cinzel">Invitación no válida</h2>
+                    <p class="invalid-message">El enlace de invitación que has usado no es válido o ha expirado.</p>
+                    <p class="invalid-message">Por favor, usa el enlace que recibiste en tu invitación personal.</p>
+                    <div style="margin-top: 30px;">
+                        <p>Enlaces de ejemplo válidos:</p>
+                        <p style="color: var(--gold-light); font-size: 0.9rem;">
+                            https://andyramoss.github.io/Invitacion-Andy/?p=1<br>
+                            https://andyramoss.github.io/Invitacion-Andy/?p=2<br>
+                            https://andyramoss.github.io/Invitacion-Andy/?p=3
+                        </p>
+                    </div>
+                </div>
+            `;
+            
+            // Ocultar otras secciones
+            document.querySelectorAll('section:not(.hero-section)').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.querySelector('.footer').style.display = 'none';
+        }
+
+        // Configurar formulario RSVP
+        function setupRSVPForm() {
+            const form = document.getElementById('rsvp-form');
+            const attendanceSelect = document.getElementById('attendance');
+            const guestsCountGroup = document.getElementById('guests-count-group');
+            const noteGroup = document.getElementById('note-group');
+            const guestsCountInput = document.getElementById('guests-count');
+            const maxAllowedSpan = document.getElementById('max-allowed');
+            
+            // Mostrar/ocultar campos según selección
+            attendanceSelect.addEventListener('change', function() {
+                if (this.value === 'yes') {
+                    guestsCountGroup.style.display = 'block';
+                    noteGroup.style.display = 'block';
+                    
+                    // Establecer máximo
+                    if (currentInvitationData) {
+                        guestsCountInput.max = currentInvitationData.maxGuests;
+                        maxAllowedSpan.textContent = currentInvitationData.maxGuests;
+                    }
+                } else {
+                    guestsCountGroup.style.display = 'none';
+                    noteGroup.style.display = 'block';
+                }
+            });
+            
+            // Manejar envío del formulario
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const guestName = document.getElementById('guest-name').value.trim();
+                const attendance = attendanceSelect.value;
+                const guestsCount = attendance === 'yes' ? parseInt(guestsCountInput.value) : 0;
+                const note = document.getElementById('note').value.trim();
+                
+                // Validaciones
+                if (!guestName) {
+                    alert('Por favor, escribe tu nombre');
+                    return;
+                }
+                
+                if (attendance === 'yes' && (guestsCount < 1 || guestsCount > currentInvitationData.maxGuests)) {
+                    alert(`Por favor, ingresa un número válido de personas (1-${currentInvitationData.maxGuests})`);
+                    return;
+                }
+                
+                // Enviar datos a Firestore
+                try {
+                    await db.collection('invitaciones').doc(currentInvitationId).set({
+                        guestName: guestName,
+                        attendance: attendance,
+                        guestsCount: attendance === 'yes' ? guestsCount : 0,
+                        note: note || '',
+                        confirmed: true,
+                        confirmedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        invitationName: currentInvitationData.name,
+                        maxGuests: currentInvitationData.maxGuests
+                    }, { merge: true });
+                    
+                    // Mostrar mensaje de confirmación
+                    showConfirmationMessage(attendance, guestsCount, guestName);
+                    
+                    // Actualizar estado
+                    document.getElementById('guest-status').textContent = 'Confirmado';
+                    document.getElementById('invitation-details').textContent = 
+                        `Confirmado por: ${guestName} (${guestsCount} persona${guestsCount !== 1 ? 's' : ''})`;
+                    
+                } catch (error) {
+                    console.error('Error guardando confirmación:', error);
+                    showErrorMessage('Error al guardar tu confirmación. Por favor, intenta nuevamente.');
+                }
+            });
+        }
+
+        // Mostrar mensaje de confirmación
+        function showConfirmationMessage(attendance, guestsCount, guestName) {
+            const form = document.getElementById('rsvp-form');
+            const confirmationMessage = document.getElementById('confirmation-message');
+            const confirmationDetails = document.getElementById('confirmation-details');
+            
+            form.style.display = 'none';
+            
+            if (attendance === 'yes') {
+                confirmationDetails.textContent = 
+                    `¡Gracias ${guestName}! Has confirmado la asistencia de ${guestsCount} persona${guestsCount !== 1 ? 's' : ''}.`;
+            } else {
+                confirmationDetails.textContent = 
+                    `Gracias ${guestName} por avisarnos que no podrás asistir. Lamentamos no poder contar contigo.`;
+            }
+            
+            confirmationMessage.style.display = 'block';
+        }
+
+        // Mostrar mensaje de error
+        function showErrorMessage(message) {
+            const errorMessage = document.getElementById('error-message');
+            const errorDetails = document.getElementById('error-details');
+            
+            errorDetails.textContent = message;
+            errorMessage.style.display = 'block';
+            
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 5000);
+        }
     </script>
 </body>
 </html>
