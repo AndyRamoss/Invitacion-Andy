@@ -210,133 +210,26 @@ async function checkAdminAccess(email) {
         const emailLower = email.toLowerCase();
         console.log("🔍 Verificando acceso para:", emailLower);
         
-        // ===== SOLUCIÓN TEMPORAL =====
-        // PERMITIR CUALQUIER EMAIL DE GOOGLE POR AHORA
-        if (emailLower.endsWith('@gmail.com') || 
-            emailLower.endsWith('@googlemail.com') ||
-            emailLower.includes('@google')) {
-            console.log("✅ Acceso temporal permitido para:", emailLower);
-            console.log("⚠️ ADVERTENCIA: Esto es temporal. Configura Firebase después.");
-            
-            // Mostrar mensaje en la página
-            setTimeout(() => {
-                const alertDiv = document.createElement('div');
-                alertDiv.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    background: #ff9800;
-                    color: #000;
-                    padding: 15px 20px;
-                    border-radius: 10px;
-                    z-index: 99999;
-                    max-width: 500px;
-                    text-align: center;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                    font-family: 'Montserrat', sans-serif;
-                `;
-                alertDiv.innerHTML = `
-                    <strong>⚠️ MODO DE DESARROLLO</strong><br>
-                    <small>Todos los emails de Google tienen acceso temporal.</small><br>
-                    <small>Configura Firebase: Ve a Firestore → Crea colección 'admins' → Agrega tu email.</small>
-                `;
-                document.body.appendChild(alertDiv);
-                
-                // Auto-remover después de 10 segundos
-                setTimeout(() => {
-                    alertDiv.remove();
-                }, 10000);
-            }, 1000);
-            
-            return true;
-        }
-        
-        // ===== INTENTAR FIREBASE SI ESTÁ DISPONIBLE =====
+        // 1. PRIMERO: Verificar en Firebase Firestore
         if (firebaseDb) {
             try {
-                console.log("Intentando acceder a colección 'admins'...");
-                
-                // Opción 1: Colección 'admins' (documento con email como ID)
+                console.log("Buscando en colección 'admins'...");
                 const adminDoc = await firebaseDb.collection('admins').doc(emailLower).get();
                 
                 if (adminDoc.exists) {
-                    console.log("✅ Administrador encontrado en Firestore 'admins'");
+                    console.log("✅ Administrador encontrado en Firestore");
                     return true;
+                } else {
+                    console.log("❌ No encontrado en colección 'admins'");
                 }
-                
-                console.log("❌ No encontrado en 'admins', probando 'administrators'...");
-                
-                // Opción 2: Colección 'administrators' (documento con campo email)
-                const adminQuery = await firebaseDb.collection('administrators')
-                    .where('email', '==', emailLower)
-                    .limit(1)
-                    .get();
-                
-                if (!adminQuery.empty) {
-                    console.log("✅ Administrador encontrado en 'administrators'");
-                    return true;
-                }
-                
-                console.log("❌ No encontrado en ninguna colección");
-                
             } catch (firestoreError) {
                 console.warn("⚠️ Error accediendo a Firestore:", firestoreError);
-                console.warn("Mensaje:", firestoreError.message);
-                console.warn("Código:", firestoreError.code);
-                
-                // Si es error de permisos, mostrar ayuda específica
-                if (firestoreError.code === 'permission-denied') {
-                    console.error("❌ PERMISO DENEGADO en Firestore");
-                    console.error("Configura las reglas de seguridad en Firebase Console:");
-                    console.error("1. Ve a Firestore Database → Reglas");
-                    console.error("2. Usa estas reglas temporales:");
-                    console.error(`
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if true;
-    }
-  }
-}
-                    `);
-                    console.error("3. Luego agrega tu email a la colección 'admins'");
-                }
+                // Continuar con el método alternativo
             }
         } else {
-            console.warn("⚠️ Firebase DB no disponible aún");
+            console.warn("⚠️ Firebase DB no disponible");
         }
         
-        // ===== LISTA DE ADMINISTRADORES PREDETERMINADOS =====
-        const defaultAdmins = [
-            'andy.ramosmanzanilla@gmail.com',
-            'andyramoss@gmail.com',
-            'admin@encuesta-649b8.firebaseapp.com',
-            'andy.ramosmanzanilla@hotmail.com',  // Por si acaso
-            'andy@gmail.com'  // Cualquier variante
-        ];
-        
-        // Verificar si el email está en la lista (incluyendo variantes)
-        for (const adminEmail of defaultAdmins) {
-            if (emailLower.includes(adminEmail.toLowerCase().replace('@', '').replace('.', ''))) {
-                console.log(`✅ Email coincide con administrador predeterminado: ${adminEmail}`);
-                return true;
-            }
-        }
-        
-        console.log("❌ No es administrador según ninguna verificación");
-        return false;
-        
-    } catch (error) {
-        console.error("❌ Error verificando acceso de administrador:", error);
-        console.error("Stack:", error.stack);
-        
-        // En caso de error, permitir acceso temporal para debugging
-        console.warn("⚠️ PERMITIENDO ACCESO TEMPORAL PARA DEBUGGING");
-        return true;  // ¡TEMPORAL! Cambia esto después
-    }
-}
         // 2. SEGUNDO: Verificar en colección 'administrators' (alternativa)
         if (firebaseDb) {
             try {
