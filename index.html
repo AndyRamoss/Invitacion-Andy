@@ -108,6 +108,17 @@
             100% { background-position: 1000px 0; }
         }
         
+        @keyframes envelopeFloat {
+            0%, 100% { 
+                transform: translateY(0) rotate(-5deg); 
+                box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+            }
+            50% { 
+                transform: translateY(-15px) rotate(5deg); 
+                box-shadow: 0 15px 25px rgba(212, 175, 55, 0.5);
+            }
+        }
+        
         /* CLASES DE ANIMACIÓN */
         .animate-on-scroll {
             opacity: 0;
@@ -676,25 +687,78 @@
             margin-bottom: 25px;
             display: flex;
             justify-content: center;
+            perspective: 1000px;
         }
         
-        .gift-image {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, var(--gold), var(--gold-light));
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .money-envelope {
+            width: 180px;
+            height: 130px;
+            position: relative;
+            animation: envelopeFloat 4s ease-in-out infinite;
+        }
+        
+        .envelope-body {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f5e6a3, #d4af37);
+            border-radius: 10px;
             position: relative;
             overflow: hidden;
-            animation: pulse 2s ease-in-out infinite;
-            border: 5px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+            transform-style: preserve-3d;
         }
         
-        .gift-image i {
-            font-size: 4rem;
-            color: var(--black);
+        .envelope-flap {
+            position: absolute;
+            top: -30px;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 90px solid transparent;
+            border-right: 90px solid transparent;
+            border-bottom: 40px solid #e6d17a;
+            z-index: 2;
+        }
+        
+        .money-bills {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 1;
+        }
+        
+        .money-bill {
+            height: 20px;
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            border-radius: 3px;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .money-bill:nth-child(2) {
+            background: linear-gradient(90deg, #2980b9, #3498db);
+            margin-left: 10px;
+        }
+        
+        .money-bill:nth-child(3) {
+            background: linear-gradient(90deg, #8e44ad, #9b59b6);
+            margin-left: 5px;
+        }
+        
+        .money-bill::after {
+            content: '$';
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
         }
         
         .gift-card h2 {
@@ -1017,6 +1081,11 @@
                 padding: 40px 20px;
             }
             
+            .money-envelope {
+                width: 150px;
+                height: 110px;
+            }
+            
             .rsvp-form {
                 padding: 30px 20px;
             }
@@ -1037,6 +1106,16 @@
             
             .section-title {
                 font-size: 1.8rem;
+            }
+            
+            .money-envelope {
+                width: 120px;
+                height: 90px;
+            }
+            
+            .envelope-flap {
+                border-left: 60px solid transparent;
+                border-right: 60px solid transparent;
             }
         }
     </style>
@@ -1266,8 +1345,15 @@
         <div class="content-section">
             <div class="gift-card">
                 <div class="gift-image-container">
-                    <div class="gift-image">
-                        <i class="fas fa-envelope"></i>
+                    <div class="money-envelope">
+                        <div class="envelope-body">
+                            <div class="envelope-flap"></div>
+                            <div class="money-bills">
+                                <div class="money-bill"></div>
+                                <div class="money-bill"></div>
+                                <div class="money-bill"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <h2 class="font-cinzel">Regalos</h2>
@@ -1461,7 +1547,7 @@
             
             // Función para abrir ubicación en Google Maps
             window.openLocation = function() {
-                window.open('https://www.google.com/maps/place/Cielito+Lindo/@21.0099547,-89.651842,13z/data=!4m10!1m2!2m1!1sSala+de+fiestas+Cielito+Lindo,+Calle+85+x+86+y+88+s%2Fn,+Dzity%C3%A1,+Yucat%C3%A1n!3m6!1s0x8f56756ff2e3f023:0xb0ecf9ad6015db7!8m2!3d21.053414!4d-89.652718!15sCkhTYWxhIGRlIGZpZXN0YXMgQ2llbGl0byBMluZG8gQ2FsbGUgODUgeCA4NiB5IDg4IHMvbiwgRHppdHnDoSxYYXVjYXTDoS5aRyJFc2FsYSBkZSBmaWVzdGFzIGNpZWxpdG8gbGluZG8gY2FsbGUgODUgeCA4NiB5IDg4IHMgbiBkeml0ecEgIHl1Y2F0w6FukgEGZ2FyZGVumgEjQ2haRFNVaE5NRzluUzBWSlEwRm5TVVJDTlRsWWRrOUJFQUXgAQD6AQQIABAa!16s%2Fg%2F11gmww71x5?entry=ttu&g_ep=EgoyMDI2MDEyOC4wIKXMDSoJLDEwMDc5MjA3MUgBUAM%3D', '_blank');
+                window.open('https://www.google.com/maps/place/Cielito+Lindo/@21.0099547,-89.651842,13z/data=!4m10!1m2!2m1!1sSala+de+fiestas+Cielito+Lindo,+Calle+85+x+86+y+88+s%2Fn,+Dzity%C3%A1,+Yucat%C3%A1n!3m6!1s0x8f56756ff2e3f023:0xb0ecf9ad6015db7!8m2!3d21.053414!4d-89.652718!15sCkhTYWxhIGRlIGZpZXN0YXMgQ2llbGl0byBMluZG8gQ2FsbGUgODUgeCA4NiB5IDg4IHMvbiwgRHppdHnDoSxYYXVjYXTDoS5aRyJFc2FsYSBkZSBmaWVzdGFzIGNpZWxpdG8gbGluZG8gQ2FsbGUgODUgeCA4NiB5IDg4IHMgbiBkeml0ecEgIHl1Y2F0w6FukgEGZ2FyZGVumgEjQ2haRFNVaE5NRzluUzBWSlEwRm5TVVJDTlRsWWRrOUJFQUXgAQD6AQQIABAa!16s%2Fg%2F11gmww71x5?entry=ttu&g_ep=EgoyMDI2MDEyOC4wIKXMDSoJLDEwMDc5MjA3MUgBUAM%3D', '_blank');
             };
             
             // Countdown Timer
