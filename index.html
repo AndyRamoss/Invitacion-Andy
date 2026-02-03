@@ -592,7 +592,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 40px;
+            margin-bottom: 50px;
             position: relative;
         }
         
@@ -609,10 +609,9 @@
             background: rgba(26, 26, 26, 0.5);
             border: 1px solid rgba(212, 175, 55, 0.1);
             border-radius: 15px;
-            padding: 25px;
+            padding: 30px;
             backdrop-filter: blur(10px);
             transition: var(--transition);
-            text-align: center;
         }
         
         .itinerary-item:hover .itinerary-content {
@@ -634,13 +633,27 @@
         .itinerary-content h4 {
             color: var(--gold-light);
             font-size: 1.3rem;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
         
-        .itinerary-content p {
+        .itinerary-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .itinerary-content li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 8px;
             color: rgba(255, 255, 255, 0.8);
-            font-size: 0.95rem;
-            line-height: 1.5;
+        }
+        
+        .itinerary-content li::before {
+            content: '▶';
+            position: absolute;
+            left: 0;
+            color: var(--gold);
+            font-size: 0.8rem;
         }
         
         /* GIFTS SECTION */
@@ -657,44 +670,31 @@
             border-radius: 20px;
             padding: 60px 40px;
             backdrop-filter: blur(10px);
-            position: relative;
-            overflow: hidden;
         }
         
-        .gift-icon {
-            font-size: 3.5rem;
-            color: var(--gold);
+        .gift-image-container {
             margin-bottom: 25px;
-            animation: pulse 2s ease-in-out infinite;
+            display: flex;
+            justify-content: center;
         }
         
         .gift-image {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 25px;
-            background: linear-gradient(45deg, var(--gold), var(--gold-light));
+            width: 150px;
+            height: 150px;
             border-radius: 50%;
+            background: linear-gradient(45deg, var(--gold), var(--gold-light));
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+            border: 5px solid rgba(212, 175, 55, 0.3);
         }
         
-        .gift-image::before {
-            content: '💌';
-            font-size: 3.5rem;
-            position: absolute;
-        }
-        
-        .gift-image::after {
-            content: '💵';
-            font-size: 2rem;
-            position: absolute;
-            top: 20px;
-            right: 15px;
-            opacity: 0.8;
+        .gift-image i {
+            font-size: 4rem;
+            color: var(--black);
         }
         
         .gift-card h2 {
@@ -711,17 +711,6 @@
         
         .gift-message p {
             margin-bottom: 10px;
-        }
-        
-        .gift-note {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(212, 175, 55, 0.1);
-            border-radius: 10px;
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            font-style: italic;
-            color: var(--gold-light);
-            font-size: 0.95rem;
         }
         
         /* RSVP SECTION */
@@ -1028,15 +1017,6 @@
                 padding: 40px 20px;
             }
             
-            .gift-image {
-                width: 100px;
-                height: 100px;
-            }
-            
-            .gift-image::before {
-                font-size: 3rem;
-            }
-            
             .rsvp-form {
                 padding: 30px 20px;
             }
@@ -1057,15 +1037,6 @@
             
             .section-title {
                 font-size: 1.8rem;
-            }
-            
-            .gift-image {
-                width: 80px;
-                height: 80px;
-            }
-            
-            .gift-image::before {
-                font-size: 2.5rem;
             }
         }
     </style>
@@ -1103,7 +1074,6 @@
             </div>
             <div id="invitation-info" style="margin-top: 20px;">
                 <div id="invitation-message" class="font-playfair" style="color: var(--gold-light); font-size: 1.1rem;"></div>
-                <div id="invitation-details" class="font-playfair" style="color: var(--gold-light); font-size: 1rem; margin-top: 10px;"></div>
             </div>
         </div>
         <div class="scroll-hint">
@@ -1209,8 +1179,12 @@
                 <div class="itinerary-item">
                     <div class="itinerary-time">7:30 – 9:00 P.M.</div>
                     <div class="itinerary-content">
-                        <h4 class="font-cinzel">Alfombra Roja & Fotos</h4>
-                        <p>Llegada y sesión de fotos</p>
+                        <h4 class="font-cinzel">Alfombra Roja y Fotos</h4>
+                        <ul>
+                            <li>Pasarela en alfombra roja</li>
+                            <li>Sesión de fotos</li>
+                            <li>Cabina fotográfica</li>
+                        </ul>
                     </div>
                 </div>
                 
@@ -1218,7 +1192,10 @@
                     <div class="itinerary-time">9:00 – 9:30 P.M.</div>
                     <div class="itinerary-content">
                         <h4 class="font-cinzel">Apertura Oficial</h4>
-                        <p>Presentación y apertura de la fiesta</p>
+                        <ul>
+                            <li>Presentación</li>
+                            <li>Inicio de la fiesta</li>
+                        </ul>
                     </div>
                 </div>
                 
@@ -1226,7 +1203,12 @@
                     <div class="itinerary-time">9:30 P.M. – 3:00 A.M.</div>
                     <div class="itinerary-content">
                         <h4 class="font-cinzel">Entretenimiento</h4>
-                        <p>Luz y sonido, juegos y diversión</p>
+                        <ul>
+                            <li>Luz y sonido</li>
+                            <li>Brincolines</li>
+                            <li>Mesa de billar</li>
+                            <li>Juegos de mesa</li>
+                        </ul>
                     </div>
                 </div>
                 
@@ -1234,7 +1216,10 @@
                     <div class="itinerary-time">10:00 – 11:00 P.M.</div>
                     <div class="itinerary-content">
                         <h4 class="font-cinzel">Cena</h4>
-                        <p>Cena y barra libre</p>
+                        <ul>
+                            <li>Menú gourmet</li>
+                            <li>Barra de bebidas</li>
+                        </ul>
                     </div>
                 </div>
                 
@@ -1242,7 +1227,10 @@
                     <div class="itinerary-time">11:30 P.M. – 12:30 A.M.</div>
                     <div class="itinerary-content">
                         <h4 class="font-cinzel">Show Sorpresa</h4>
-                        <p>Espectáculo especial</p>
+                        <ul>
+                            <li>Espectáculo especial</li>
+                            <li>Actuación exclusiva</li>
+                        </ul>
                     </div>
                 </div>
                 
@@ -1250,7 +1238,10 @@
                     <div class="itinerary-time">12:30 – 1:30 A.M.</div>
                     <div class="itinerary-content">
                         <h4 class="font-cinzel">Toro Mecánico</h4>
-                        <p>Diversión con música y baile</p>
+                        <ul>
+                            <li>Diversión garantizada</li>
+                            <li>Música y baile</li>
+                        </ul>
                     </div>
                 </div>
                 
@@ -1258,7 +1249,10 @@
                     <div class="itinerary-time">3:00 A.M.</div>
                     <div class="itinerary-content">
                         <h4 class="font-cinzel">Fin de la Fiesta</h4>
-                        <p>Despedida especial</p>
+                        <ul>
+                            <li>Créditos finales</li>
+                            <li>Despedida</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -1271,15 +1265,16 @@
     <section class="gifts-section animate-on-scroll">
         <div class="content-section">
             <div class="gift-card">
-                <div class="gift-image"></div>
+                <div class="gift-image-container">
+                    <div class="gift-image">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                </div>
                 <h2 class="font-cinzel">Regalos</h2>
                 <div class="gift-message">
                     <p>Tu presencia es el mejor regalo que puedo recibir.</p>
                     <p>Si deseas hacerme un obsequio,</p>
-                    <p>te agradeceré mucho tu detalle.</p>
-                </div>
-                <div class="gift-note">
-                    <i class="fas fa-envelope"></i> La lluvia de sobres será bienvenida con gratitud
+                    <p>los sobres serán bienvenidos con gratitud.</p>
                 </div>
             </div>
         </div>
@@ -1405,73 +1400,12 @@
     </footer>
 
     <!-- Scripts -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/invitation.js"></script>
+    
     <script>
-        // Configuración de Firebase (TU CONFIGURACIÓN)
-        const firebaseConfig = {
-            apiKey: "AIzaSyB82WhFzHfXmzqOcQ3rTgl-8zGEx0Tb4dY",
-            authDomain: "andy-invitacion.firebaseapp.com",
-            projectId: "andy-invitacion",
-            storageBucket: "andy-invitacion.firebasestorage.app",
-            messagingSenderId: "191643816356",
-            appId: "1:191643816356:web:3cbb0d6d05d3c337492c13",
-            measurementId: "G-FFDR2RQGYB"
-        };
-
-        // Inicializar Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
-
-        // Obtener parámetro de URL (p=1, p=2, etc.)
-        function getUrlParameter(name) {
-            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-            var results = regex.exec(location.search);
-            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-        }
-
-        // Obtener ID de invitación del parámetro p
-        const invitationId = getUrlParameter('p');
-        
-        // Datos de invitaciones predefinidos (de 1 a 10)
-        const invitationsData = {
-            '1': { name: "Familia Rodríguez", maxGuests: 4, message: "¡Hola Familia! Los espero en mi fiesta." },
-            '2': { name: "Amigos del trabajo", maxGuests: 2, message: "Compañeros, ¡no falten a esta gran noche!" },
-            '3': { name: "Primos y primas", maxGuests: 5, message: "Primer@s, ¡vamos a pasarla increíble!" },
-            '4': { name: "Mejores amigos", maxGuests: 3, message: "Amig@s, ¡esta noche será inolvidable con ustedes!" },
-            '5': { name: "Familia Pérez", maxGuests: 4, message: "Querida familia Pérez, ¡los espero con gusto!" },
-            '6': { name: "Compañeros de universidad", maxGuests: 3, message: "¡Nos vemos en la fiesta, compañeros!" },
-            '7': { name: "Vecinos", maxGuests: 2, message: "Vecin@s, ¡los invito a celebrar conmigo!" },
-            '8': { name: "Amigos de la infancia", maxGuests: 4, message: "¡Amig@s de toda la vida, no falten!" },
-            '9': { name: "Familia González", maxGuests: 3, message: "Familia González, ¡será un honor tenerlos!" },
-            '10': { name: "Invitados especiales", maxGuests: 2, message: "Invitad@s especiales, ¡los espero con alegría!" }
-        };
-
-        // Variables globales
-        let currentInvitationId = null;
-        let currentInvitationData = null;
-
+        // Animaciones al hacer scroll
         document.addEventListener('DOMContentLoaded', function() {
-            // Verificar invitación
-            if (invitationId && invitationsData[invitationId]) {
-                currentInvitationId = invitationId;
-                currentInvitationData = invitationsData[invitationId];
-                
-                // Mostrar información de la invitación
-                document.getElementById('invitation-message').textContent = currentInvitationData.message;
-                document.getElementById('max-guests').textContent = currentInvitationData.maxGuests + " personas";
-                document.getElementById('max-allowed').textContent = currentInvitationData.maxGuests;
-                
-                // Cambiar título de invitación
-                document.getElementById('invitation-title').textContent = `Invitación para ${currentInvitationData.name}`;
-                
-                // Intentar cargar datos de Firestore
-                loadInvitationData();
-            } else {
-                // Invitación inválida
-                showInvalidInvitation();
-            }
-
             // Observador de intersección para animaciones
             const observerOptions = {
                 threshold: 0.1,
@@ -1527,7 +1461,7 @@
             
             // Función para abrir ubicación en Google Maps
             window.openLocation = function() {
-                window.open('https://www.google.com/maps/place/Cielito+Lindo/@21.0099547,-89.651842,13z/data=!4m10!1m2!2m1!1sSala+de+fiestas+Cielito+Lindo,+Calle+85+x+86+y+88+s%2Fn,+Dzity%C3%A1,+Yucat%C3%A1n!3m6!1s0x8f56756ff2e3f023:0xb0ecf9ad6015db7!8m2!3d21.053414!4d-89.652718!15sCkhTYWxhIGRlIGZpZXN0YXMgQ2llbGl0byBMluZG8gQ2FsbGUgODUgeCA4NiB5IDg4IHMvbiwgRHppdHnDoSxYYXVjYXTDoS5aRyJFc2FsYSBkZSBmaWVzdGFzIGNpZWxpdG8gbGluZG8gY2FsbGUgODUgeCA4NiB5IDg4IHMgbiBkeml0ecEgIHl1Y2F0w6FukgEGZ2FyZGVumgEjQ2haRFNVaE5NRzluUzBWSlEwRm5TVVJDTlRsWWRrOUJFQUXgAQD6AQQIABAa!16s%2Fg%2F11gmww71x5?entry=ttu&g_ep=EgoyMDI2MDEyOC4wIKXMDSoKLDEwMDc5MjA3MUgBUAM%3D', '_blank');
+                window.open('https://www.google.com/maps/place/Cielito+Lindo/@21.0099547,-89.651842,13z/data=!4m10!1m2!2m1!1sSala+de+fiestas+Cielito+Lindo,+Calle+85+x+86+y+88+s%2Fn,+Dzity%C3%A1,+Yucat%C3%A1n!3m6!1s0x8f56756ff2e3f023:0xb0ecf9ad6015db7!8m2!3d21.053414!4d-89.652718!15sCkhTYWxhIGRlIGZpZXN0YXMgQ2llbGl0byBMluZG8gQ2FsbGUgODUgeCA4NiB5IDg4IHMvbiwgRHppdHnDoSxYYXVjYXTDoS5aRyJFc2FsYSBkZSBmaWVzdGFzIGNpZWxpdG8gbGluZG8gY2FsbGUgODUgeCA4NiB5IDg4IHMgbiBkeml0ecEgIHl1Y2F0w6FukgEGZ2FyZGVumgEjQ2haRFNVaE5NRzluUzBWSlEwRm5TVVJDTlRsWWRrOUJFQUXgAQD6AQQIABAa!16s%2Fg%2F11gmww71x5?entry=ttu&g_ep=EgoyMDI2MDEyOC4wIKXMDSoJLDEwMDc5MjA3MUgBUAM%3D', '_blank');
             };
             
             // Countdown Timer
@@ -1559,165 +1493,7 @@
             // Actualizar countdown cada segundo
             updateCountdown();
             setInterval(updateCountdown, 1000);
-            
-            // Configurar formulario RSVP
-            setupRSVPForm();
         });
-
-        // Cargar datos de Firestore
-        async function loadInvitationData() {
-            try {
-                const docRef = db.collection('invitaciones').doc(currentInvitationId);
-                const doc = await docRef.get();
-                
-                if (doc.exists) {
-                    const data = doc.data();
-                    document.getElementById('guest-status').textContent = data.confirmed ? 'Confirmado' : 'Pendiente de confirmación';
-                    
-                    // Si ya está confirmado, mostrar detalles
-                    if (data.confirmed) {
-                        document.getElementById('invitation-details').textContent = `Confirmado por: ${data.guestName} (${data.guestsCount} personas)`;
-                    }
-                }
-            } catch (error) {
-                console.error('Error cargando datos:', error);
-            }
-        }
-
-        // Mostrar invitación inválida
-        function showInvalidInvitation() {
-            const heroSection = document.querySelector('.hero-section');
-            heroSection.innerHTML = `
-                <div class="invalid-invitation">
-                    <div class="invalid-icon">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </div>
-                    <h2 class="font-cinzel">Invitación no válida</h2>
-                    <p class="invalid-message">El enlace de invitación que has usado no es válido o ha expirado.</p>
-                    <p class="invalid-message">Por favor, usa el enlace que recibiste en tu invitación personal.</p>
-                    <div style="margin-top: 30px;">
-                        <p>Enlaces de ejemplo válidos:</p>
-                        <p style="color: var(--gold-light); font-size: 0.9rem;">
-                            https://andyramoss.github.io/Invitacion-Andy/?p=1<br>
-                            https://andyramoss.github.io/Invitacion-Andy/?p=2<br>
-                            https://andyramoss.github.io/Invitacion-Andy/?p=3
-                        </p>
-                    </div>
-                </div>
-            `;
-            
-            // Ocultar otras secciones
-            document.querySelectorAll('section:not(.hero-section)').forEach(section => {
-                section.style.display = 'none';
-            });
-            document.querySelector('.footer').style.display = 'none';
-        }
-
-        // Configurar formulario RSVP
-        function setupRSVPForm() {
-            const form = document.getElementById('rsvp-form');
-            const attendanceSelect = document.getElementById('attendance');
-            const guestsCountGroup = document.getElementById('guests-count-group');
-            const noteGroup = document.getElementById('note-group');
-            const guestsCountInput = document.getElementById('guests-count');
-            const maxAllowedSpan = document.getElementById('max-allowed');
-            
-            // Mostrar/ocultar campos según selección
-            attendanceSelect.addEventListener('change', function() {
-                if (this.value === 'yes') {
-                    guestsCountGroup.style.display = 'block';
-                    noteGroup.style.display = 'block';
-                    
-                    // Establecer máximo
-                    if (currentInvitationData) {
-                        guestsCountInput.max = currentInvitationData.maxGuests;
-                        maxAllowedSpan.textContent = currentInvitationData.maxGuests;
-                    }
-                } else {
-                    guestsCountGroup.style.display = 'none';
-                    noteGroup.style.display = 'block';
-                }
-            });
-            
-            // Manejar envío del formulario
-            form.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                const guestName = document.getElementById('guest-name').value.trim();
-                const attendance = attendanceSelect.value;
-                const guestsCount = attendance === 'yes' ? parseInt(guestsCountInput.value) : 0;
-                const note = document.getElementById('note').value.trim();
-                
-                // Validaciones
-                if (!guestName) {
-                    alert('Por favor, escribe tu nombre');
-                    return;
-                }
-                
-                if (attendance === 'yes' && (guestsCount < 1 || guestsCount > currentInvitationData.maxGuests)) {
-                    alert(`Por favor, ingresa un número válido de personas (1-${currentInvitationData.maxGuests})`);
-                    return;
-                }
-                
-                // Enviar datos a Firestore
-                try {
-                    await db.collection('invitaciones').doc(currentInvitationId).set({
-                        guestName: guestName,
-                        attendance: attendance,
-                        guestsCount: attendance === 'yes' ? guestsCount : 0,
-                        note: note || '',
-                        confirmed: true,
-                        confirmedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        invitationName: currentInvitationData.name,
-                        maxGuests: currentInvitationData.maxGuests
-                    }, { merge: true });
-                    
-                    // Mostrar mensaje de confirmación
-                    showConfirmationMessage(attendance, guestsCount, guestName);
-                    
-                    // Actualizar estado
-                    document.getElementById('guest-status').textContent = 'Confirmado';
-                    document.getElementById('invitation-details').textContent = 
-                        `Confirmado por: ${guestName} (${guestsCount} persona${guestsCount !== 1 ? 's' : ''})`;
-                    
-                } catch (error) {
-                    console.error('Error guardando confirmación:', error);
-                    showErrorMessage('Error al guardar tu confirmación. Por favor, intenta nuevamente.');
-                }
-            });
-        }
-
-        // Mostrar mensaje de confirmación
-        function showConfirmationMessage(attendance, guestsCount, guestName) {
-            const form = document.getElementById('rsvp-form');
-            const confirmationMessage = document.getElementById('confirmation-message');
-            const confirmationDetails = document.getElementById('confirmation-details');
-            
-            form.style.display = 'none';
-            
-            if (attendance === 'yes') {
-                confirmationDetails.textContent = 
-                    `¡Gracias ${guestName}! Has confirmado la asistencia de ${guestsCount} persona${guestsCount !== 1 ? 's' : ''}.`;
-            } else {
-                confirmationDetails.textContent = 
-                    `Gracias ${guestName} por avisarnos que no podrás asistir. Lamentamos no poder contar contigo.`;
-            }
-            
-            confirmationMessage.style.display = 'block';
-        }
-
-        // Mostrar mensaje de error
-        function showErrorMessage(message) {
-            const errorMessage = document.getElementById('error-message');
-            const errorDetails = document.getElementById('error-details');
-            
-            errorDetails.textContent = message;
-            errorMessage.style.display = 'block';
-            
-            setTimeout(() => {
-                errorMessage.style.display = 'none';
-            }, 5000);
-        }
     </script>
 </body>
 </html>
