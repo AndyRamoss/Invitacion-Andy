@@ -1,4 +1,4 @@
-// admin.js - Panel de Control para Hollywood Nights (Versión Autosuficiente)
+// admin.js - Panel de Control para Hollywood Nights (Versión con Admin desde Firebase)
 
 // ===== CONFIGURACIÓN DE FIREBASE =====
 const FIREBASE_CONFIG = {
@@ -165,7 +165,7 @@ async function handleGoogleLogin() {
                 handleAuthSuccess();
             } else {
                 await firebaseAuth.signOut();
-                throw new Error('No tienes permisos de administrador');
+                throw new Error('No tienes permisos de administrador. Contacta al organizador.');
             }
         }
         
@@ -199,21 +199,69 @@ async function handleGoogleLogin() {
     }
 }
 
-// Función auxiliar para verificar acceso de administrador
+// Función auxiliar para verificar acceso de administrador DESDE FIREBASE
 async function checkAdminAccess(email) {
     try {
-        if (!email) return false;
+        if (!email) {
+            console.log("❌ No se proporcionó email");
+            return false;
+        }
         
-        // Administradores predeterminados
+        const emailLower = email.toLowerCase();
+        console.log("🔍 Verificando acceso para:", emailLower);
+        
+        // 1. PRIMERO: Verificar en Firebase Firestore
+        if (firebaseDb) {
+            try {
+                console.log("Buscando en colección 'admins'...");
+                const adminDoc = await firebaseDb.collection('admins').doc(emailLower).get();
+                
+                if (adminDoc.exists) {
+                    console.log("✅ Administrador encontrado en Firestore");
+                    return true;
+                } else {
+                    console.log("❌ No encontrado en colección 'admins'");
+                }
+            } catch (firestoreError) {
+                console.warn("⚠️ Error accediendo a Firestore:", firestoreError);
+                // Continuar con el método alternativo
+            }
+        } else {
+            console.warn("⚠️ Firebase DB no disponible");
+        }
+        
+        // 2. SEGUNDO: Verificar en colección 'administrators' (alternativa)
+        if (firebaseDb) {
+            try {
+                console.log("Buscando en colección 'administrators'...");
+                const adminQuery = await firebaseDb.collection('administrators')
+                    .where('email', '==', emailLower)
+                    .limit(1)
+                    .get();
+                
+                if (!adminQuery.empty) {
+                    console.log("✅ Administrador encontrado en colección 'administrators'");
+                    return true;
+                }
+            } catch (error) {
+                console.warn("⚠️ Error buscando en 'administrators':", error);
+            }
+        }
+        
+        // 3. TERCERO: Administradores predeterminados (fallback de emergencia)
         const defaultAdmins = [
+            'andy.ramosmanzanilla@gmail.com',  // ← TU EMAIL
             'andyramoss@gmail.com',
             'admin@encuesta-649b8.firebaseapp.com'
         ];
         
-        return defaultAdmins.includes(email.toLowerCase());
+        const isDefaultAdmin = defaultAdmins.includes(emailLower);
+        console.log("¿Es administrador predeterminado?:", isDefaultAdmin);
+        
+        return isDefaultAdmin;
         
     } catch (error) {
-        console.error("Error verificando acceso de administrador:", error);
+        console.error("❌ Error verificando acceso de administrador:", error);
         return false;
     }
 }
@@ -548,7 +596,9 @@ function formatAction(action) {
         'guest_deleted': 'Invitación eliminada',
         'rsvp_updated': 'RSVP actualizado',
         'bulk_import': 'Importación masiva',
-        'login': 'Inicio de sesión'
+        'login': 'Inicio de sesión',
+        'admin_added': 'Admin agregado',
+        'admin_removed': 'Admin removido'
     };
     
     return actions[action] || action;
@@ -561,7 +611,9 @@ function getStatusClass(action) {
         'guest_deleted': 'declined',
         'rsvp_updated': 'confirmed',
         'bulk_import': 'pending',
-        'login': 'confirmed'
+        'login': 'confirmed',
+        'admin_added': 'confirmed',
+        'admin_removed': 'declined'
     };
     
     return statusMap[action] || 'pending';
@@ -576,6 +628,10 @@ function formatActivityDetails(details) {
     
     if (details.name) {
         return `Nombre: ${details.name}`;
+    }
+    
+    if (details.email) {
+        return `Email: ${details.email}`;
     }
     
     if (details.total) {
@@ -1569,6 +1625,244 @@ function initMobileMenu() {
     });
 }
 
+// ===== GESTIÓN DE ADMINISTRADORES DESDE FIREBASE =====
+async function loadAdminList() {
+    try {
+        const adminList = document.getElementById('admin-list');
+        if (!adminList) return;
+        
+        adminList.innerHTML = '<p style="color: #c0c0c0; text-align: center;">Cargando administradores...</p>';
+        
+        if (!firebaseDb) {
+            adminList.innerHTML = `
+                <div style="color: #c0c0c0; text-align: center;">
+                    <p>⚠️ Firebase no disponible</p>
+                    <p>Usando lista predeterminada de administradores</p>
+                </div>
+            `;
+            return;
+        }
+        
+        try {
+            // Intentar obtener administradores de Firestore
+            const snapshot = await firebaseDb.collection('admins').get();
+            
+            if (snapshot.empty) {
+                adminList.innerHTML = `
+                    <div style="color: #c0c0c0;">
+                        <h4>Administradores Actuales</h4>
+                        <p>No hay administradores registrados en Firestore.</p>
+                        <p>Usando lista predeterminada:</p>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>andy.ramosmanzanilla@gmail.com</li>
+                            <li>andyramoss@gmail.com</li>
+                        </ul>
+                        <p style="margin-top: 15px; font-size: 0.9rem; color: #888;">
+                            Para agregar administradores desde Firebase:
+                            <br>1. Ve a Firebase Console
+                            <br>2. Crea una colección llamada "admins"
+                            <br>3. Agrega documentos con emails como ID
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '<h4>Administradores (desde Firebase)</h4>';
+            html += '<div style="margin-top: 15px;">';
+            html += '<table style="width: 100%; border-collapse: collapse;">';
+            html += '<thead><tr><th style="text-align: left; padding: 8px; border-bottom: 1px solid rgba(212, 175, 55, 0.3);">Email</th><th style="text-align: left; padding: 8px; border-bottom: 1px solid rgba(212, 175, 55, 0.3);">Acciones</th></tr></thead>';
+            html += '<tbody>';
+            
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const email = doc.id;
+                html += `
+                    <tr>
+                        <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <strong>${email}</strong>
+                            ${data.role ? `<br><span style="font-size: 0.8rem; color: #888;">${data.role}</span>` : ''}
+                        </td>
+                        <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <button class="btn-action-icon btn-remove-admin" data-email="${email}" style="background: rgba(244, 67, 54, 0.1); border-color: rgba(244, 67, 54, 0.3); color: #f44336;" title="Eliminar admin">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table></div>';
+            
+            adminList.innerHTML = html;
+            
+            // Agregar event listeners a los botones de eliminar
+            document.querySelectorAll('.btn-remove-admin').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const email = btn.getAttribute('data-email');
+                    removeAdminConfirmation(email);
+                });
+            });
+            
+        } catch (error) {
+            console.error("Error cargando admins:", error);
+            adminList.innerHTML = `
+                <div style="color: #c0c0c0;">
+                    <h4>Administradores Actuales</h4>
+                    <p>Error cargando administradores desde Firebase.</p>
+                    <p>Usando lista predeterminada:</p>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>andy.ramosmanzanilla@gmail.com</li>
+                        <li>andyramoss@gmail.com</li>
+                    </ul>
+                    <p style="margin-top: 15px; color: #f44336;">
+                        Error: ${error.message}
+                    </p>
+                </div>
+            `;
+        }
+        
+    } catch (error) {
+        console.error("❌ Error cargando lista de admins:", error);
+        const adminList = document.getElementById('admin-list');
+        if (adminList) {
+            adminList.innerHTML = `
+                <div style="color: #f44336;">
+                    <p>Error cargando administradores: ${error.message}</p>
+                </div>
+            `;
+        }
+    }
+}
+
+async function addAdminFromPanel() {
+    try {
+        const emailInput = document.getElementById('new-admin-email');
+        if (!emailInput) return;
+        
+        const email = emailInput.value.trim().toLowerCase();
+        
+        if (!email || !email.includes('@')) {
+            showToast('Ingresa un email válido', 'warning');
+            return;
+        }
+        
+        showLoading();
+        
+        // Verificar que Firebase esté disponible
+        if (!firebaseDb) {
+            throw new Error('Firebase no está disponible');
+        }
+        
+        // Verificar si ya existe
+        const existingDoc = await firebaseDb.collection('admins').doc(email).get();
+        if (existingDoc.exists) {
+            showToast('Este email ya es administrador', 'warning');
+            hideLoading();
+            return;
+        }
+        
+        // Agregar administrador a Firestore
+        await firebaseDb.collection('admins').doc(email).set({
+            email: email,
+            role: 'admin',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            addedBy: currentUser ? currentUser.email : 'system',
+            addedAt: new Date().toISOString()
+        });
+        
+        // Registrar actividad
+        await logAction('admin_added', email, {
+            addedBy: currentUser?.email,
+            timestamp: new Date().toISOString()
+        });
+        
+        showToast(`✅ Administrador ${email} agregado correctamente`, 'success');
+        emailInput.value = '';
+        
+        // Recargar lista de administradores
+        loadAdminList();
+        
+    } catch (error) {
+        console.error("❌ Error agregando administrador:", error);
+        showToast('Error al agregar administrador: ' + error.message, 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+async function removeAdmin(email) {
+    try {
+        if (!firebaseDb) throw new Error('Firebase no disponible');
+        
+        // No permitir eliminarse a sí mismo
+        if (currentUser && currentUser.email.toLowerCase() === email.toLowerCase()) {
+            throw new Error('No puedes eliminarte a ti mismo como administrador');
+        }
+        
+        // Eliminar de Firestore
+        await firebaseDb.collection('admins').doc(email).delete();
+        
+        // Registrar actividad
+        await logAction('admin_removed', email, {
+            removedBy: currentUser?.email,
+            timestamp: new Date().toISOString()
+        });
+        
+        return { success: true, message: 'Administrador eliminado' };
+        
+    } catch (error) {
+        console.error("Error eliminando administrador:", error);
+        throw error;
+    }
+}
+
+function removeAdminConfirmation(email) {
+    showModal('Eliminar Administrador', `
+        <p style="color: #fff; margin-bottom: 1.5rem;">
+            ¿Estás seguro de eliminar a <strong>${email}</strong> como administrador?
+        </p>
+        <p style="color: #c0c0c0; font-size: 0.9rem;">
+            Esta persona perderá acceso al panel de administración.
+            ${currentUser && currentUser.email.toLowerCase() === email.toLowerCase() ? 
+                '<br><strong style="color: #f44336;">⚠️ No puedes eliminarte a ti mismo</strong>' : ''}
+        </p>
+    `, async () => {
+        try {
+            showLoading();
+            
+            await removeAdmin(email);
+            showToast('Administrador eliminado', 'success');
+            loadAdminList();
+            
+        } catch (error) {
+            console.error("❌ Error eliminando administrador:", error);
+            showToast(error.message || 'Error al eliminar administrador', 'error');
+        } finally {
+            hideLoading();
+        }
+    });
+}
+
+// ===== CONFIGURACIONES =====
+function loadSettings() {
+    console.log("⚙️ Cargando configuración...");
+    
+    // Cargar lista de administradores
+    loadAdminList();
+    
+    // Configurar botón para agregar admin
+    const addAdminBtn = document.getElementById('btn-add-admin');
+    if (addAdminBtn) {
+        // Remover event listeners anteriores
+        addAdminBtn.replaceWith(addAdminBtn.cloneNode(true));
+        const newAddAdminBtn = document.getElementById('btn-add-admin');
+        
+        // Agregar nuevo event listener
+        newAddAdminBtn.addEventListener('click', addAdminFromPanel);
+    }
+}
+
 // ===== UTILIDADES =====
 function showLoading() {
     const overlay = document.getElementById('loading-overlay');
@@ -1675,42 +1969,6 @@ function debounce(func, wait) {
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
     };
-}
-
-// ===== CONFIGURACIONES =====
-function loadSettings() {
-    console.log("⚙️ Cargando configuración...");
-    
-    // Por ahora, solo mostrar información básica
-    const adminList = document.getElementById('admin-list');
-    if (adminList) {
-        adminList.innerHTML = `
-            <div style="color: #c0c0c0; margin-bottom: 1rem;">
-                <p>Administradores autorizados:</p>
-                <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
-                    <li><strong>andyramoss@gmail.com</strong> (principal)</li>
-                    <li>Usuarios agregados manualmente en Firebase</li>
-                </ul>
-                <p style="margin-top: 1rem; font-size: 0.9rem;">
-                    Para agregar más administradores, ve a Firebase Console > 
-                    Firestore > Colección "admins" y agrega documentos con el email como ID.
-                </p>
-            </div>
-        `;
-    }
-    
-    // Configurar botón para agregar admin
-    const addAdminBtn = document.getElementById('btn-add-admin');
-    if (addAdminBtn) {
-        addAdminBtn.addEventListener('click', () => {
-            const email = document.getElementById('new-admin-email').value.trim();
-            if (email) {
-                showToast(`Agrega manualmente a ${email} en Firestore`, 'info');
-            } else {
-                showToast('Ingresa un email válido', 'warning');
-            }
-        });
-    }
 }
 
 // ===== INICIALIZACIÓN FINAL =====
