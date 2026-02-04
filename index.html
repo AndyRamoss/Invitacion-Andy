@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fiesta de Cumpleaños - Fiesta de Disfraces</title>
+    <title>Fiesta de Cumpleaños - Andy Ramos</title>
     
     <!-- Fuentes -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Playfair+Display:wght@400;500;700&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
@@ -157,15 +157,15 @@
             right: 0;
             z-index: 1000;
             padding: 20px 0;
-            background: rgba(10, 10, 10, 0.9);
+            background: rgba(10, 10, 10, 0.95);
             backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
             transition: var(--transition);
         }
         
         .nav-container.scrolled {
             padding: 15px 0;
-            background: rgba(10, 10, 10, 0.95);
+            background: rgba(10, 10, 10, 0.98);
         }
         
         .nav-content {
@@ -181,30 +181,31 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             color: var(--gold);
             animation: fadeInLeft 1s ease-out;
         }
         
         .logo i {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
         }
         
         .nav-links {
             display: flex;
-            gap: 30px;
+            gap: 20px;
             animation: fadeInRight 1s ease-out;
         }
         
         .nav-link {
             color: var(--light);
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1.5px;
             transition: var(--transition);
             position: relative;
             padding: 5px 0;
+            white-space: nowrap;
         }
         
         .nav-link::after {
@@ -226,6 +227,57 @@
             width: 100%;
         }
         
+        /* Mobile menu button */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--gold);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        /* Mobile menu */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            z-index: 999;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        .mobile-menu.active {
+            display: block;
+        }
+        
+        .mobile-nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .mobile-nav-link {
+            color: var(--light);
+            text-decoration: none;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+            transition: var(--transition);
+        }
+        
+        .mobile-nav-link:hover {
+            color: var(--gold);
+            padding-left: 10px;
+        }
+        
         /* HERO SECTION */
         .hero-section {
             min-height: 100vh;
@@ -244,8 +296,8 @@
             right: 0;
             bottom: 0;
             background: 
-                radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
                 linear-gradient(135deg, var(--black) 0%, var(--dark) 100%);
             z-index: -2;
         }
@@ -256,9 +308,32 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('https://images.unsplash.com/photo-1489599809516-9827b6d1cf13?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat;
-            opacity: 0.05;
+            background: 
+                linear-gradient(45deg, rgba(139, 0, 0, 0.1) 0%, transparent 50%),
+                url('https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat;
+            opacity: 0.08;
             z-index: -1;
+        }
+        
+        /* Red carpet effect */
+        .red-carpet {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(to top, rgba(139, 0, 0, 0.3), rgba(139, 0, 0, 0.1));
+            z-index: -1;
+        }
+        
+        .red-carpet::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
         }
         
         .hero-content {
@@ -278,15 +353,15 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 3px;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             animation: fadeIn 1s ease-out 0.3s both;
             box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
         }
         
         .hero-title {
-            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            font-size: clamp(2rem, 4vw, 3.5rem);
             line-height: 1.1;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             animation: fadeUp 1s ease-out 0.6s both;
             background: linear-gradient(45deg, #fff 30%, var(--gold-light) 100%);
             -webkit-background-clip: text;
@@ -294,12 +369,20 @@
             background-clip: text;
         }
         
+        .hero-name {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            color: var(--gold);
+            margin-bottom: 10px;
+            animation: fadeUp 1s ease-out 0.9s both;
+            font-family: 'Cinzel', serif;
+        }
+        
         .hero-subtitle {
             font-family: 'Playfair Display', serif;
             font-size: clamp(1.2rem, 2vw, 1.8rem);
             color: var(--gold);
             margin-bottom: 30px;
-            animation: fadeUp 1s ease-out 0.9s both;
+            animation: fadeUp 1s ease-out 1.2s both;
             font-style: italic;
         }
         
@@ -308,11 +391,11 @@
             align-items: center;
             gap: 15px;
             background: rgba(212, 175, 55, 0.1);
-            padding: 15px 35px;
+            padding: 15px 30px;
             border-radius: 15px;
             border: 1px solid rgba(212, 175, 55, 0.3);
             backdrop-filter: blur(10px);
-            animation: fadeUp 1s ease-out 1.2s both;
+            animation: fadeUp 1s ease-out 1.5s both;
         }
         
         .hero-date i {
@@ -321,19 +404,20 @@
         }
         
         .hero-date span {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 700;
             letter-spacing: 2px;
         }
         
         .scroll-hint {
             position: absolute;
-            bottom: 40px;
+            bottom: 60px;
             left: 50%;
             transform: translateX(-50%);
             animation: float 2s ease-in-out infinite;
             color: var(--gold);
             font-size: 1.5rem;
+            z-index: 2;
         }
         
         /* CONTENT SECTIONS */
@@ -377,7 +461,7 @@
         
         .section-title {
             text-align: center;
-            font-size: clamp(2rem, 4vw, 3rem);
+            font-size: clamp(1.8rem, 3vw, 2.5rem);
             margin-bottom: 50px;
             color: var(--light);
             position: relative;
@@ -397,7 +481,7 @@
         .countdown-container {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
             flex-wrap: wrap;
             max-width: 800px;
             margin: 0 auto;
@@ -405,24 +489,24 @@
         
         .countdown-item {
             flex: 1;
-            min-width: 140px;
+            min-width: 120px;
             text-align: center;
-            background: rgba(26, 26, 26, 0.5);
-            border: 1px solid rgba(212, 175, 55, 0.1);
+            background: rgba(26, 26, 26, 0.6);
+            border: 1px solid rgba(212, 175, 55, 0.2);
             border-radius: 15px;
-            padding: 25px 15px;
+            padding: 20px 10px;
             backdrop-filter: blur(10px);
             transition: var(--transition);
         }
         
         .countdown-item:hover {
-            transform: translateY(-10px);
+            transform: translateY(-5px);
             border-color: rgba(212, 175, 55, 0.3);
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.1);
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.1);
         }
         
         .countdown-number {
-            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-size: clamp(1.8rem, 3vw, 3rem);
             font-weight: 900;
             color: var(--gold-light);
             margin-bottom: 10px;
@@ -430,7 +514,7 @@
         }
         
         .countdown-label {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 2px;
             color: rgba(255, 255, 255, 0.7);
@@ -443,16 +527,16 @@
         
         .info-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
             margin-bottom: 60px;
         }
         
         .info-card {
-            background: rgba(26, 26, 26, 0.5);
-            border: 1px solid rgba(212, 175, 55, 0.1);
+            background: rgba(26, 26, 26, 0.6);
+            border: 1px solid rgba(212, 175, 55, 0.2);
             border-radius: 20px;
-            padding: 40px 30px;
+            padding: 30px 25px;
             text-align: center;
             backdrop-filter: blur(10px);
             transition: var(--transition);
@@ -481,24 +565,25 @@
         }
         
         .info-icon {
-            font-size: 3rem;
+            font-size: 2.5rem;
             color: var(--gold);
             margin-bottom: 20px;
         }
         
         .info-card h3 {
             color: var(--gold);
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             margin-bottom: 15px;
         }
         
         .info-card p {
             color: rgba(255, 255, 255, 0.8);
             margin-bottom: 5px;
+            font-size: 0.95rem;
         }
         
         .highlight-time {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             color: var(--gold-light);
             font-weight: 700;
             margin: 15px 0;
@@ -511,19 +596,19 @@
             background: linear-gradient(45deg, var(--gold), var(--gold-light));
             color: var(--black);
             text-decoration: none;
-            padding: 12px 30px;
+            padding: 10px 25px;
             border-radius: 25px;
             font-weight: 600;
-            margin-top: 20px;
+            margin-top: 15px;
             transition: var(--transition);
             border: none;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
         
         .btn-location:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
         }
         
         /* THEME SECTION */
@@ -539,32 +624,35 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: radial-gradient(circle at center, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
+            background: 
+                radial-gradient(circle at center, rgba(212, 175, 55, 0.05) 0%, transparent 70%),
+                linear-gradient(45deg, rgba(139, 0, 0, 0.05) 0%, transparent 50%);
             z-index: -1;
         }
         
         .theme-content {
             max-width: 800px;
             margin: 0 auto;
-            padding: 60px 40px;
-            background: rgba(26, 26, 26, 0.3);
-            border: 1px solid rgba(212, 175, 55, 0.1);
+            padding: 40px 30px;
+            background: rgba(26, 26, 26, 0.4);
+            border: 1px solid rgba(212, 175, 55, 0.2);
             border-radius: 20px;
             backdrop-filter: blur(10px);
         }
         
         .theme-title {
-            font-size: clamp(2.5rem, 4vw, 3.5rem);
+            font-size: clamp(1.8rem, 3vw, 2.5rem);
             color: var(--gold-light);
             margin-bottom: 10px;
             line-height: 1.2;
         }
         
         .theme-subtitle {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: rgba(255, 255, 255, 0.8);
             max-width: 600px;
-            margin: 0 auto 30px;
+            margin: 0 auto 25px;
+            line-height: 1.6;
         }
         
         .theme-note {
@@ -572,13 +660,15 @@
             align-items: center;
             gap: 10px;
             background: rgba(212, 175, 55, 0.1);
-            padding: 10px 20px;
+            padding: 8px 18px;
             border-radius: 15px;
             border: 1px solid rgba(212, 175, 55, 0.2);
+            font-size: 0.9rem;
         }
         
         .theme-note i {
             color: var(--gold);
+            font-size: 0.9rem;
         }
         
         /* ITINERARY SECTION */
@@ -607,7 +697,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 50px;
+            margin-bottom: 40px;
             position: relative;
         }
         
@@ -621,10 +711,10 @@
         
         .itinerary-content {
             flex: 1;
-            background: rgba(26, 26, 26, 0.5);
-            border: 1px solid rgba(212, 175, 55, 0.1);
+            background: rgba(26, 26, 26, 0.6);
+            border: 1px solid rgba(212, 175, 55, 0.2);
             border-radius: 15px;
-            padding: 30px;
+            padding: 25px;
             backdrop-filter: blur(10px);
             transition: var(--transition);
         }
@@ -632,22 +722,22 @@
         .itinerary-item:hover .itinerary-content {
             transform: translateY(-5px);
             border-color: rgba(212, 175, 55, 0.3);
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.1);
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.1);
         }
         
         .itinerary-time {
-            flex: 0 0 200px;
+            flex: 0 0 180px;
             text-align: center;
-            padding: 0 20px;
+            padding: 0 15px;
             font-family: 'Cinzel', serif;
             font-weight: 700;
             color: var(--gold);
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
         
         .itinerary-content h4 {
             color: var(--gold-light);
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             margin-bottom: 15px;
         }
         
@@ -659,8 +749,9 @@
         .itinerary-content li {
             position: relative;
             padding-left: 20px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
         }
         
         .itinerary-content li::before {
@@ -668,7 +759,7 @@
             position: absolute;
             left: 0;
             color: var(--gold);
-            font-size: 0.8rem;
+            font-size: 0.7rem;
         }
         
         /* GIFTS SECTION */
@@ -680,10 +771,10 @@
         .gift-card {
             max-width: 600px;
             margin: 0 auto;
-            background: rgba(26, 26, 26, 0.3);
-            border: 1px solid rgba(212, 175, 55, 0.1);
+            background: rgba(26, 26, 26, 0.4);
+            border: 1px solid rgba(212, 175, 55, 0.2);
             border-radius: 20px;
-            padding: 60px 40px;
+            padding: 50px 30px;
             backdrop-filter: blur(10px);
         }
         
@@ -694,7 +785,7 @@
         }
         
         .envelope-with-money {
-            font-size: 8rem;
+            font-size: 6rem;
             position: relative;
             animation: envelopeFloat 3s ease-in-out infinite;
             color: var(--gold);
@@ -706,7 +797,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 3rem;
+            font-size: 2.5rem;
             display: flex;
             gap: 5px;
             animation: moneyShine 2s ease-in-out infinite;
@@ -717,7 +808,7 @@
         }
         
         .gift-card h2 {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             color: var(--gold-light);
             margin-bottom: 20px;
         }
@@ -743,10 +834,10 @@
         }
         
         .guest-info {
-            background: rgba(26, 26, 26, 0.5);
-            border: 1px solid rgba(212, 175, 55, 0.1);
+            background: rgba(26, 26, 26, 0.6);
+            border: 1px solid rgba(212, 175, 55, 0.2);
             border-radius: 15px;
-            padding: 30px;
+            padding: 25px;
             margin-bottom: 30px;
             backdrop-filter: blur(10px);
         }
@@ -755,83 +846,85 @@
             display: flex;
             align-items: center;
             gap: 15px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             color: var(--gold);
         }
         
         .info-header i {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
         }
         
         .info-header h3 {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
         }
         
         .info-content {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
         }
         
         .info-item {
             display: flex;
             align-items: center;
             gap: 15px;
-            padding: 15px;
+            padding: 12px;
             background: rgba(10, 10, 10, 0.5);
             border-radius: 10px;
         }
         
         .info-item i {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             color: var(--gold);
         }
         
         .info-label {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: rgba(255, 255, 255, 0.6);
         }
         
         .info-value {
             font-weight: 600;
             color: var(--light);
+            font-size: 0.95rem;
         }
         
         .rsvp-form {
-            background: rgba(26, 26, 26, 0.5);
-            border: 1px solid rgba(212, 175, 55, 0.1);
+            background: rgba(26, 26, 26, 0.6);
+            border: 1px solid rgba(212, 175, 55, 0.2);
             border-radius: 15px;
-            padding: 40px;
+            padding: 30px;
             backdrop-filter: blur(10px);
         }
         
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         
         .form-group label {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             color: var(--gold);
             font-weight: 500;
+            font-size: 0.95rem;
         }
         
         .form-select, .form-input, .form-textarea {
             width: 100%;
-            padding: 12px 20px;
+            padding: 12px 15px;
             background: rgba(10, 10, 10, 0.7);
             border: 1px solid rgba(212, 175, 55, 0.2);
             border-radius: 10px;
             color: var(--light);
             font-family: 'Montserrat', sans-serif;
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: var(--transition);
         }
         
         .form-textarea {
-            min-height: 120px;
+            min-height: 100px;
             resize: vertical;
         }
         
@@ -843,7 +936,7 @@
         
         .guests-info {
             margin-top: 8px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: rgba(255, 255, 255, 0.6);
         }
         
@@ -852,10 +945,10 @@
             background: linear-gradient(45deg, var(--gold), var(--gold-light));
             color: var(--black);
             border: none;
-            padding: 15px;
+            padding: 14px;
             border-radius: 10px;
             font-family: 'Montserrat', sans-serif;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
@@ -867,13 +960,13 @@
         
         .btn-submit:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
         }
         
         .confirmation-message, .error-message {
             text-align: center;
-            padding: 40px;
-            background: rgba(26, 26, 26, 0.5);
+            padding: 30px;
+            background: rgba(26, 26, 26, 0.6);
             border-radius: 15px;
             backdrop-filter: blur(10px);
         }
@@ -887,8 +980,8 @@
         }
         
         .message-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
+            font-size: 3.5rem;
+            margin-bottom: 15px;
         }
         
         .confirmation-message .message-icon {
@@ -902,17 +995,20 @@
         .confirmation-message h3 {
             color: #4caf50;
             margin-bottom: 15px;
+            font-size: 1.3rem;
         }
         
         .error-message h3 {
             color: #f44336;
             margin-bottom: 15px;
+            font-size: 1.3rem;
         }
         
         .message-note {
             margin-top: 15px;
             color: rgba(255, 255, 255, 0.7);
             font-style: italic;
+            font-size: 0.9rem;
         }
         
         /* LOADER */
@@ -931,7 +1027,7 @@
         }
         
         .loader-clapperboard {
-            font-size: 4rem;
+            font-size: 3.5rem;
             color: var(--gold);
             animation: pulse 1.5s ease-in-out infinite;
         }
@@ -945,22 +1041,22 @@
         }
         
         .invalid-icon {
-            font-size: 5rem;
+            font-size: 4rem;
             color: #f44336;
             margin-bottom: 30px;
         }
         
         .invalid-message {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: rgba(255, 255, 255, 0.8);
             margin-bottom: 20px;
         }
         
         /* FOOTER */
         .footer {
-            padding: 60px 0;
+            padding: 50px 0;
             background: linear-gradient(to top, var(--black), transparent);
-            border-top: 1px solid rgba(212, 175, 55, 0.1);
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
             text-align: center;
         }
         
@@ -969,42 +1065,74 @@
             align-items: center;
             justify-content: center;
             gap: 15px;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             color: var(--gold);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .footer-text {
             color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
         }
         
         .footer-social {
             color: rgba(255, 255, 255, 0.5);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
         
         /* RESPONSIVE */
-        @media (max-width: 768px) {
+        @media (max-width: 992px) {
             :root {
-                --section-spacing: 80px;
+                --section-spacing: 60px;
             }
             
+            .nav-links {
+                gap: 15px;
+            }
+            
+            .nav-link {
+                font-size: 0.8rem;
+                letter-spacing: 1px;
+            }
+        }
+        
+        @media (max-width: 768px) {
             .nav-links {
                 display: none;
             }
             
+            .mobile-menu-btn {
+                display: block;
+            }
+            
             .hero-title {
-                font-size: 2.5rem;
+                font-size: 1.8rem;
+            }
+            
+            .hero-name {
+                font-size: 2.2rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .hero-date {
+                padding: 12px 25px;
+            }
+            
+            .hero-date span {
+                font-size: 1.1rem;
             }
             
             .countdown-item {
-                min-width: 120px;
-                padding: 20px 10px;
+                min-width: calc(50% - 15px);
+                padding: 15px 10px;
             }
             
             .countdown-number {
-                font-size: 2.5rem;
+                font-size: 2rem;
             }
             
             .itinerary::before {
@@ -1015,6 +1143,7 @@
                 flex-direction: column;
                 align-items: flex-start;
                 margin-left: 60px;
+                margin-bottom: 30px;
             }
             
             .itinerary-time {
@@ -1022,48 +1151,38 @@
                 text-align: left;
                 padding: 0 0 10px 0;
                 order: -1;
+                font-size: 1rem;
+                width: 100%;
+            }
+            
+            .itinerary-content {
+                width: 100%;
+                padding: 20px;
             }
             
             .info-grid {
                 grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .info-card {
+                padding: 25px 20px;
             }
             
             .theme-content {
-                padding: 40px 20px;
+                padding: 30px 20px;
+            }
+            
+            .theme-title {
+                font-size: 1.8rem;
+            }
+            
+            .theme-subtitle {
+                font-size: 1rem;
             }
             
             .gift-card {
-                padding: 40px 20px;
-            }
-            
-            .envelope-with-money {
-                font-size: 6rem;
-            }
-            
-            .money-emojis {
-                font-size: 2.5rem;
-            }
-            
-            .rsvp-form {
                 padding: 30px 20px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .hero-title {
-                font-size: 2rem;
-            }
-            
-            .countdown-container {
-                gap: 10px;
-            }
-            
-            .countdown-item {
-                min-width: calc(50% - 10px);
-            }
-            
-            .section-title {
-                font-size: 1.8rem;
             }
             
             .envelope-with-money {
@@ -1072,6 +1191,96 @@
             
             .money-emojis {
                 font-size: 2rem;
+            }
+            
+            .gift-card h2 {
+                font-size: 1.8rem;
+            }
+            
+            .rsvp-form {
+                padding: 25px 20px;
+            }
+            
+            .section-title {
+                font-size: 1.6rem;
+                margin-bottom: 40px;
+            }
+            
+            .section-spacer {
+                height: 60px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 1.5rem;
+            }
+            
+            .hero-name {
+                font-size: 1.8rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+            
+            .countdown-container {
+                gap: 10px;
+            }
+            
+            .countdown-item {
+                min-width: calc(50% - 10px);
+                padding: 12px 8px;
+            }
+            
+            .countdown-number {
+                font-size: 1.6rem;
+            }
+            
+            .countdown-label {
+                font-size: 0.7rem;
+            }
+            
+            .section-title {
+                font-size: 1.4rem;
+            }
+            
+            .envelope-with-money {
+                font-size: 4rem;
+            }
+            
+            .money-emojis {
+                font-size: 1.5rem;
+            }
+            
+            .info-item {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+            
+            .badge {
+                padding: 6px 20px;
+                font-size: 0.7rem;
+            }
+            
+            .scroll-hint {
+                bottom: 40px;
+                font-size: 1.2rem;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .hero-name {
+                font-size: 1.6rem;
+            }
+            
+            .hero-date span {
+                font-size: 1rem;
+            }
+            
+            .countdown-item {
+                min-width: 100%;
             }
         }
     </style>
@@ -1088,20 +1297,37 @@
                 <a href="#home" class="nav-link">Inicio</a>
                 <a href="#countdown" class="nav-link">Cuenta Regresiva</a>
                 <a href="#event" class="nav-link">El Evento</a>
-                <a href="#theme" class="nav-link">Tema</a>
+                <a href="#theme" class="nav-link">Vestimenta</a>
                 <a href="#itinerary" class="nav-link">Itinerario</a>
                 <a href="#rsvp" class="nav-link">Confirmar</a>
             </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
     </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-nav-links">
+            <a href="#home" class="mobile-nav-link">Inicio</a>
+            <a href="#countdown" class="mobile-nav-link">Cuenta Regresiva</a>
+            <a href="#event" class="mobile-nav-link">El Evento</a>
+            <a href="#theme" class="mobile-nav-link">Vestimenta</a>
+            <a href="#itinerary" class="mobile-nav-link">Itinerario</a>
+            <a href="#rsvp" class="mobile-nav-link">Confirmar</a>
+        </div>
+    </div>
 
     <!-- Hero Section -->
     <section id="home" class="hero-section">
         <div class="hero-bg"></div>
         <div class="hero-overlay"></div>
+        <div class="red-carpet"></div>
         <div class="hero-content">
             <div class="badge">Estreno Exclusivo</div>
-            <h1 class="hero-title font-cinzel">Fiesta de Disfraces<br>de Películas</h1>
+            <h1 class="hero-title font-cinzel">¡Te invito a mi fiesta de cumpleaños!</h1>
+            <div class="hero-name">Andy Ramos Manzanilla</div>
             <p class="hero-subtitle font-playfair">Celebra conmigo mis 24 años</p>
             <div class="hero-date">
                 <i class="fas fa-calendar-star"></i>
@@ -1194,7 +1420,7 @@
         <div class="theme-bg"></div>
         <div class="content-section">
             <div class="theme-content">
-                <h2 class="theme-title font-cinzel">Código de vestimenta:<br>Fiesta de Disfraces</h2>
+                <h2 class="theme-title font-cinzel">Código de vestimenta</h2>
                 <p class="theme-subtitle">Ven caracterizado como tu personaje favorito de cualquier película, serie o franquicia cinematográfica. ¡La creatividad es tu mejor vestuario!</p>
                 <div class="theme-note">
                     <i class="fas fa-info-circle"></i>
@@ -1442,8 +1668,31 @@
     <script src="js/invitation.js"></script>
     
     <script>
-        // Animaciones al hacer scroll
+        // Mobile menu functionality
         document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+            
+            // Toggle mobile menu
+            mobileMenuBtn.addEventListener('click', function() {
+                mobileMenu.classList.toggle('active');
+            });
+            
+            // Close mobile menu when clicking on a link
+            mobileNavLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    mobileMenu.classList.remove('active');
+                });
+            });
+            
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!mobileMenu.contains(event.target) && !mobileMenuBtn.contains(event.target)) {
+                    mobileMenu.classList.remove('active');
+                }
+            });
+            
             // Observador de intersección para animaciones
             const observerOptions = {
                 threshold: 0.1,
