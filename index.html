@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fiesta de Disfraces de Películas - Hollywood Nights</title>
+    <title>Fiesta de Cumpleaños - Fiesta de Disfraces</title>
     
     <!-- Fuentes -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Playfair+Display:wght@400;500;700&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
@@ -110,13 +110,17 @@
         
         @keyframes envelopeFloat {
             0%, 100% { 
-                transform: translateY(0) rotate(-5deg); 
-                box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+                transform: translateY(0) scale(1); 
             }
             50% { 
-                transform: translateY(-15px) rotate(5deg); 
-                box-shadow: 0 15px 25px rgba(212, 175, 55, 0.5);
+                transform: translateY(-10px) scale(1.02); 
             }
+        }
+        
+        @keyframes moneyShine {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
         }
         
         /* CLASES DE ANIMACIÓN */
@@ -552,7 +556,7 @@
         .theme-title {
             font-size: clamp(2.5rem, 4vw, 3.5rem);
             color: var(--gold-light);
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             line-height: 1.2;
         }
         
@@ -687,78 +691,29 @@
             margin-bottom: 25px;
             display: flex;
             justify-content: center;
-            perspective: 1000px;
         }
         
-        .money-envelope {
-            width: 180px;
-            height: 130px;
+        .envelope-with-money {
+            font-size: 8rem;
             position: relative;
-            animation: envelopeFloat 4s ease-in-out infinite;
+            animation: envelopeFloat 3s ease-in-out infinite;
+            color: var(--gold);
+            filter: drop-shadow(0 5px 15px rgba(212, 175, 55, 0.3));
         }
         
-        .envelope-body {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #f5e6a3, #d4af37);
-            border-radius: 10px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
-            transform-style: preserve-3d;
-        }
-        
-        .envelope-flap {
+        .money-emojis {
             position: absolute;
-            top: -30px;
-            left: 0;
-            width: 0;
-            height: 0;
-            border-left: 90px solid transparent;
-            border-right: 90px solid transparent;
-            border-bottom: 40px solid #e6d17a;
-            z-index: 2;
-        }
-        
-        .money-bills {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            right: 20px;
-            bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            z-index: 1;
-        }
-        
-        .money-bill {
-            height: 20px;
-            background: linear-gradient(90deg, #27ae60, #2ecc71);
-            border-radius: 3px;
-            position: relative;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        
-        .money-bill:nth-child(2) {
-            background: linear-gradient(90deg, #2980b9, #3498db);
-            margin-left: 10px;
-        }
-        
-        .money-bill:nth-child(3) {
-            background: linear-gradient(90deg, #8e44ad, #9b59b6);
-            margin-left: 5px;
-        }
-        
-        .money-bill::after {
-            content: '$';
-            position: absolute;
-            right: 8px;
             top: 50%;
-            transform: translateY(-50%);
-            color: white;
-            font-weight: bold;
-            font-size: 12px;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            display: flex;
+            gap: 5px;
+            animation: moneyShine 2s ease-in-out infinite;
+        }
+        
+        .money-emojis span {
+            text-shadow: 0 2px 10px rgba(46, 204, 113, 0.5);
         }
         
         .gift-card h2 {
@@ -1081,9 +1036,12 @@
                 padding: 40px 20px;
             }
             
-            .money-envelope {
-                width: 150px;
-                height: 110px;
+            .envelope-with-money {
+                font-size: 6rem;
+            }
+            
+            .money-emojis {
+                font-size: 2.5rem;
             }
             
             .rsvp-form {
@@ -1108,14 +1066,12 @@
                 font-size: 1.8rem;
             }
             
-            .money-envelope {
-                width: 120px;
-                height: 90px;
+            .envelope-with-money {
+                font-size: 5rem;
             }
             
-            .envelope-flap {
-                border-left: 60px solid transparent;
-                border-right: 60px solid transparent;
+            .money-emojis {
+                font-size: 2rem;
             }
         }
     </style>
@@ -1126,7 +1082,7 @@
         <div class="nav-content">
             <div class="logo">
                 <i class="fas fa-film"></i>
-                <span>Hollywood Nights</span>
+                <span>Fiesta de Cumpleaños</span>
             </div>
             <div class="nav-links">
                 <a href="#home" class="nav-link">Inicio</a>
@@ -1238,7 +1194,7 @@
         <div class="theme-bg"></div>
         <div class="content-section">
             <div class="theme-content">
-                <h2 class="theme-title font-cinzel">Fiesta de Disfraces<br>Inspirados en Películas</h2>
+                <h2 class="theme-title font-cinzel">Código de vestimenta:<br>Fiesta de Disfraces</h2>
                 <p class="theme-subtitle">Ven caracterizado como tu personaje favorito de cualquier película, serie o franquicia cinematográfica. ¡La creatividad es tu mejor vestuario!</p>
                 <div class="theme-note">
                     <i class="fas fa-info-circle"></i>
@@ -1296,8 +1252,7 @@
                     <div class="itinerary-content">
                         <h4 class="font-cinzel">Cena</h4>
                         <ul>
-                            <li>Menú gourmet</li>
-                            <li>Barra de bebidas</li>
+                            <li>Cena</li>
                         </ul>
                     </div>
                 </div>
@@ -1329,7 +1284,6 @@
                     <div class="itinerary-content">
                         <h4 class="font-cinzel">Fin de la Fiesta</h4>
                         <ul>
-                            <li>Créditos finales</li>
                             <li>Despedida</li>
                         </ul>
                     </div>
@@ -1345,14 +1299,12 @@
         <div class="content-section">
             <div class="gift-card">
                 <div class="gift-image-container">
-                    <div class="money-envelope">
-                        <div class="envelope-body">
-                            <div class="envelope-flap"></div>
-                            <div class="money-bills">
-                                <div class="money-bill"></div>
-                                <div class="money-bill"></div>
-                                <div class="money-bill"></div>
-                            </div>
+                    <div class="envelope-with-money">
+                        💌
+                        <div class="money-emojis">
+                            <span>💵</span>
+                            <span>💰</span>
+                            <span>💸</span>
                         </div>
                     </div>
                 </div>
@@ -1473,14 +1425,14 @@
         <div class="content-section">
             <div class="footer-logo">
                 <i class="fas fa-film"></i>
-                <span class="font-cinzel">Hollywood Nights</span>
+                <span class="font-cinzel">Fiesta de Cumpleaños</span>
             </div>
             <div class="footer-text">
                 <p>Una noche de cine, glamour y celebración</p>
                 <p>21 de febrero 2026 • Sala de fiestas Cielito Lindo</p>
             </div>
             <div class="footer-social">
-                <p>#HollywoodNights2026 #FiestaDePeliculas #24AñosDeGlamour</p>
+                <p>#FiestaDeCumpleaños2026 #FiestaDePeliculas #24AñosDeGlamour</p>
             </div>
         </div>
     </footer>
